@@ -24,8 +24,6 @@ def get_passive_crypto_data(crypto):
     Return: All rates for the crypto (ticker)
     """
 
-    crypto = str(crypto.upper())
-
     binance_passive_data = binance_data(crypto)
     crypto_com_passive_data = crypto_com_data(crypto)
     defirate_passive_data = defirate_data(crypto)
@@ -586,7 +584,3 @@ def backup_data():
     if os.path.isdir(destination_dir):
         shutil.rmtree(destination_dir)
     shutil.copytree(source_dir, destination_dir)
-
-
-# get_passive_crypto_data('BTC')
-# backup_data()
