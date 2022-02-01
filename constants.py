@@ -9,16 +9,18 @@ PORTFOLIO_INDEX_WEIGHT = 0.8
 PORTFOLIO_CRYPTO_WEIGHT = 1 - PORTFOLIO_INDEX_WEIGHT
 FUNNEL_APPROACH = False
 
+START_TEST_DATE = 0  # TODO
+END_TEST_DATE = 0  # TODO
+
 # Options of Crypto to choose
 CRYPTO_OPTIONS = ['DAI', 'BTC', 'ETH']
 
-CRYPTO_BASKET = ['DAI', 'BTC']
+CRYPTO_BASKET = ['BTC']
 
 INITIAL_INVESTMENT = 100
 DCA_MONTHLY = 0  # default
 
 APPLIED_CRYPTO_RATES = get_passive_investment_data(CRYPTO_BASKET)
-print(APPLIED_CRYPTO_RATES)
 
 PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'Kraken', 'OKX', 'KuCoin', 'BlockFi', 'Gemini', 'gate.io', 'Huobi']
 
