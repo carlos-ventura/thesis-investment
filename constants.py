@@ -25,6 +25,15 @@ APPLIED_CRYPTO_RATES = get_passive_investment_data(CRYPTO_BASKET)
 PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'Kraken', 'OKX', 'KuCoin', 'BlockFi', 'Gemini', 'gate.io', 'Huobi']
 
 WEBSITES = [
-    "https://www.binance.com/en", "https://crypto.com/eea/", "https://defirate.com/", "https://www.kraken.com/", "https://www.okx.com/",
-    "https://www.kucoin.com/", "https://www.blockfi.com/", "https://www.gemini.com/eu", "https://www.gate.io/", "https://www.huobi.com/en-us/"
+    "https://www.binance.com/en/savings", "https://www.binance.com/en/pos", "https://www.binance.com/en/defi-staking",
+    "https://crypto.com/eea/earn",
+    "https://defirate.com/lend/",
+    "https://www.blockfi.com/rates/",
+    "https://www.okx.com/earn",
+    "https://www.kucoin.com/margin/lend", "https://www.kucoin.com/earn/finance/list?type=DEMAND",
+    "https://www.kucoin.com/earn/finance/list?type=STAKING",
+    "https://www.kraken.com/features/staking-coins/",
+    "https://www.gemini.com/earn",
+    "https://www.gate.io/hodl", "https://www.gate.io/cryptoloan/USDT", "https://www.gate.io/lending/liquidity#market"
+    "https://www.huobi.com/en-us/staking/vote/", "https://www.huobi.com/en-us/staking/eth2/", "https://www.huobi.com/en-us/financial/earn/?type=limit"
 ]
