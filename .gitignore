@@ -133,3 +133,6 @@ dmypy.json
 
 # Environment
 venv-thesis
+
+# Pylint
+.pylintrc
