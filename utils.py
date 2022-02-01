@@ -14,7 +14,7 @@ def apy_to_apr(rate, percentage=False):
     if percentage:
         rate /= 100
     periodic_rate = (1 + rate)**(1/PERIODS) - 1
-    return (periodic_rate * PERIODS) * 100
+    return periodic_rate * PERIODS
 
 
 def apr_to_apy(rate, percentage=False):
@@ -26,7 +26,7 @@ def apr_to_apy(rate, percentage=False):
     if percentage:
         rate /= 100
     periodic_rate = float(rate) / PERIODS
-    return ((1 + periodic_rate)**PERIODS - 1) * 100
+    return (1 + periodic_rate)**PERIODS - 1
 
 
 def daily_to_annualy(rate, percentage=False):
