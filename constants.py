@@ -34,6 +34,6 @@ WEBSITES = [
     "https://www.kucoin.com/earn/finance/list?type=STAKING",
     "https://www.kraken.com/features/staking-coins/",
     "https://www.gemini.com/earn",
-    "https://www.gate.io/hodl", "https://www.gate.io/cryptoloan/USDT", "https://www.gate.io/lending/liquidity#market"
+    "https://www.gate.io/hodl", "https://www.gate.io/margin/lend/", "https://www.gate.io/lending/liquidity#market"
     "https://www.huobi.com/en-us/staking/vote/", "https://www.huobi.com/en-us/staking/eth2/", "https://www.huobi.com/en-us/financial/earn/?type=limit"
 ]
