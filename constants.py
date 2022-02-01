@@ -20,7 +20,9 @@ DCA_MONTHLY = 0  # default
 APPLIED_CRYPTO = get_passive_investment_data(CRYPTO_BASKET)
 print(APPLIED_CRYPTO)
 
-PLATFORMS = {
-    'DeFi': ['Binance', 'Crypto.com', 'Coinbase', 'Kraken', 'OKX', 'KuCoin', 'BlockFi', 'Gemini', 'gate.io', 'Huobi'],
-    'CeFi': ['PancakeSwap (v2)', 'Uniswap (v3)']
-}
+PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'Kraken', 'OKX', 'KuCoin', 'BlockFi', 'Gemini', 'gate.io', 'Huobi']
+
+WEBSITES = [
+    "https://www.binance.com/en", "https://crypto.com/eea/", "https://defirate.com/", "https://www.kraken.com/", "https://www.okx.com/",
+    "https://www.kucoin.com/", "https://www.blockfi.com/", "https://www.gemini.com/eu", "https://www.gate.io/", "https://www.huobi.com/en-us/"
+]
