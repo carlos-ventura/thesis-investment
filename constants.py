@@ -12,7 +12,7 @@ FUNNEL_APPROACH = False
 # Options of Crypto to choose
 CRYPTO_OPTIONS = ['DAI', 'BTC', 'ETH']
 
-CRYPTO_BASKET = ['DAI', 'BTC', 'ETH']
+CRYPTO_BASKET = ['DAI', 'BTC']
 
 INITIAL_INVESTMENT = 100
 DCA_MONTHLY = 0  # default

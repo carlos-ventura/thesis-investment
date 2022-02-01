@@ -40,7 +40,6 @@ def get_passive_crypto_data(crypto):
                           *gemini_passive_data, *gateio_passive_data, *huobi_passive_data])
     crypto_passive = [float(rate) for rate in crypto_passive]
     crypto_passive.sort()
-    print(f"\n{crypto} {crypto_passive}\n")
     return crypto_passive
 
 
@@ -425,8 +424,7 @@ def gateio_staking(crypto):
     rates = []
     url = f'https://www.gate.io/hodl/hold_finances_search?search={crypto}'
     response = requests.request("GET", url)
-    json_data_rates = json.loads(response.text)['data']
-    if json_data_rates:
+    if json_data_rates := json.loads(response.text)['data']:
         for rates_data in json_data_rates:
             if rates_data['status'] != 3:
                 rates.append(float(rates_data['year_rate']) / 100)

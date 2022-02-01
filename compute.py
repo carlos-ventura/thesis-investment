@@ -16,7 +16,7 @@ def get_passive_investment_data(crypto_basket):
 
     for crypto in crypto_basket:
 
-        crypto = crypto.upper()
+        crypto = str(crypto.upper())
         crypto_passive_data = get_passive_crypto_data(crypto)
         crypto_passive_basket.setdefault(crypto, crypto_passive_data)
 
