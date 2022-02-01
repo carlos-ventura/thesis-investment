@@ -17,8 +17,8 @@ CRYPTO_BASKET = ['DAI', 'BTC']
 INITIAL_INVESTMENT = 100
 DCA_MONTHLY = 0  # default
 
-APPLIED_CRYPTO = get_passive_investment_data(CRYPTO_BASKET)
-print(APPLIED_CRYPTO)
+APPLIED_CRYPTO_RATES = get_passive_investment_data(CRYPTO_BASKET)
+print(APPLIED_CRYPTO_RATES)
 
 PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'Kraken', 'OKX', 'KuCoin', 'BlockFi', 'Gemini', 'gate.io', 'Huobi']
 
