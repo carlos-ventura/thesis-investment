@@ -24,20 +24,23 @@ def get_passive_crypto_data(crypto):
     Return: All rates for the crypto (ticker)
     """
 
-    binance_passive_data = binance_data(crypto)
-    crypto_com_passive_data = crypto_com_data(crypto)
-    defirate_passive_data = defirate_data(crypto)
-    blockfi_passive_data = blockfi_data(crypto)
-    okx_passive_data = okx_data(crypto)
-    kucoin_passive_data = kucoin_data(crypto)
-    kraken_passive_data = kraken_data(crypto)
-    gemini_passive_data = gemini_data(crypto)
-    gateio_passive_data = gateio_data(crypto)
-    huobi_passive_data = huobi_data(crypto)
+    print("Fetching passive rates data...")
 
-    crypto_passive = list([*binance_passive_data, *crypto_com_passive_data, *defirate_passive_data,
-                          *blockfi_passive_data, *okx_passive_data, *kucoin_passive_data, *kraken_passive_data,
-                          *gemini_passive_data, *gateio_passive_data, *huobi_passive_data])
+    binance_passive_data = binance_data(crypto)
+    # crypto_com_passive_data = crypto_com_data(crypto)
+    # defirate_passive_data = defirate_data(crypto)
+    # blockfi_passive_data = blockfi_data(crypto)
+    # okx_passive_data = okx_data(crypto)
+    # kucoin_passive_data = kucoin_data(crypto)
+    # kraken_passive_data = kraken_data(crypto)
+    # gemini_passive_data = gemini_data(crypto)
+    # gateio_passive_data = gateio_data(crypto)
+    # huobi_passive_data = huobi_data(crypto)
+
+    # crypto_passive = list([*binance_passive_data, *crypto_com_passive_data, *defirate_passive_data,
+    #                       *blockfi_passive_data, *okx_passive_data, *kucoin_passive_data, *kraken_passive_data,
+    #                       *gemini_passive_data, *gateio_passive_data, *huobi_passive_data])
+    crypto_passive = [*binance_passive_data]
     crypto_passive = [float(rate) for rate in crypto_passive]
     crypto_passive.sort()
     return crypto_passive
@@ -52,7 +55,7 @@ def binance_data(crypto):
 
     platform = "Binance"
 
-    print(f'Fetching passive data for {crypto} in {platform}')
+    # print(f'Fetching passive data for {crypto} in {platform}')
 
     rates = list([*binance_staking(crypto), *binance_savings(crypto)])
 
@@ -140,7 +143,7 @@ def crypto_com_data(crypto):
     data_path_file = 'data/crypto_com_passive.json'
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
         url = 'https://help.crypto.com/en/articles/2996965-crypto-earn-how-does-it-work'
         html = requests.get(url).content
         df_list = pd.read_html(html)
@@ -161,7 +164,7 @@ def crypto_com_data(crypto):
         with open("data/crypto_com_passive.json", mode="w", encoding="UTF-8") as crypto_com_data_json:
             json.dump(crypto_com_passive_data, crypto_com_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open("data/crypto_com_passive.json", mode="r", encoding="UTF-8") as json_crypto_passive:
             crypto_com_passive_data = json.load(json_crypto_passive)
 
@@ -180,7 +183,7 @@ def defirate_data(crypto):
     data_path_file = 'data/defirate_passive.json'
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
         url = 'https://defirate.com/lend/'
         html = requests.get(url).content
         df_list = pd.read_html(html)
@@ -197,7 +200,7 @@ def defirate_data(crypto):
         with open("data/defirate_passive.json", mode="w", encoding="UTF-8") as defirate_data_json:
             json.dump(defirate_passive_data, defirate_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open("data/defirate_passive.json", mode="r", encoding="UTF-8") as json_defirate_passive:
             defirate_passive_data = json.load(json_defirate_passive)
 
@@ -215,7 +218,7 @@ def blockfi_data(crypto):
     platform = "BlockFi"
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
         url = "https://www.blockfi.com/page-data/rates/page-data.json"
         request = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
         dict_str = urllib.request.urlopen(request).read().decode("UTF-8")
@@ -231,7 +234,7 @@ def blockfi_data(crypto):
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as blockfi_data_json:
             json.dump(blockfi_passive_data, blockfi_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_blockfi_passive:
             blockfi_passive_data = json.load(json_blockfi_passive)
 
@@ -249,7 +252,7 @@ def okx_data(crypto):
     data_path_file = "data/okx_passive.json"
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
 
         url = "https://www.okx.com/v2/asset/balance/project-currency"
         response = requests.request("GET", url)
@@ -264,7 +267,7 @@ def okx_data(crypto):
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as okx_data_json:
             json.dump(okx_passive_data, okx_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_okx_passive:
             okx_passive_data = json.load(json_okx_passive)
 
@@ -280,7 +283,7 @@ def kucoin_data(crypto):
 
     platform = "KuCoin"
 
-    print(f'Fetching passive data for {crypto} in {platform}')
+    # print(f'Fetching passive data for {crypto} in {platform}')
 
     rates = list([*kucoin_staking(crypto), *kucoin_savings(crypto), *kucoin_lending(crypto)])
 
@@ -344,7 +347,7 @@ def kraken_data(crypto):
     data_path_file = "data/kraken_passive.json"
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
         url = 'https://www.kraken.com/features/staking-coins/'
         opener = urllib.request.build_opener()
         opener.addheaders = [('User-agent', 'Mozilla/5.0')]
@@ -365,7 +368,7 @@ def kraken_data(crypto):
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as kraken_data_json:
             json.dump(kraken_passive_data, kraken_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_kraken_passive:
             kraken_passive_data = json.load(json_kraken_passive)
 
@@ -383,7 +386,7 @@ def gemini_data(crypto):
     data_path_file = "data/gemini_passive.json"
 
     if not os.path.isfile(data_path_file):
-        print(f'Fetching passive data for {crypto} in {platform}')
+        # print(f'Fetching passive data for {crypto} in {platform}')
         gemini_passive_data = {}
 
         url = 'https://exchange.gemini.com/earn/maxInterestRates'
@@ -395,7 +398,7 @@ def gemini_data(crypto):
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as gemini_data_json:
             json.dump(gemini_passive_data, gemini_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_gemini_passive:
             gemini_passive_data = json.load(json_gemini_passive)
 
@@ -410,7 +413,7 @@ def gateio_data(crypto):
     """
 
     platform = "gate.io"
-    print(f'Fetching passive data for {crypto} in {platform}')
+    # print(f'Fetching passive data for {crypto} in {platform}')
 
     rates = list([*gateio_staking(crypto), *gateio_lending(crypto), *gateio_liquidity_mining(crypto)])
 
@@ -474,15 +477,15 @@ def huobi_data(crypto):
     """
 
     platform = "Huobi"
-    print(f'Fetching passive data for {crypto} in {platform}')
+    # print(f'Fetching passive data for {crypto} in {platform}')
 
-    staking_rates = return_function(crypto, platform, huobi_staking(crypto))
+    staking_rates = return_function(crypto, platform, huobi_staking())
     savings_rates = return_function(crypto, platform, huobi_savings(crypto), api=True)
 
     return [*staking_rates, *savings_rates]
 
 
-def huobi_staking(crypto):
+def huobi_staking():
     """
     Params: crypto (ticker)
     Function: Scrap APY for ticker in Huobi Staking
@@ -508,7 +511,7 @@ def huobi_staking(crypto):
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as huobi_data_json:
             json.dump(huobi_passive_data, huobi_data_json, indent=4)
     else:
-        print(f"Fetching passive data for {crypto} in json file {platform}...")
+        # print(f"Fetching passive data for {crypto} in json file {platform}...")
         with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_huobi_passive:
             huobi_passive_data = json.load(json_huobi_passive)
 
@@ -554,12 +557,12 @@ def return_function(crypto, platform, data, api=False):
 
     if not api:
         if data.get(crypto) is not None:
-            print(f'{list(data.get(crypto))}\n')
+            # print(f'{list(data.get(crypto))}\n')
             return list(data.get(crypto))
     elif data:
-        print(f'{list(data)}\n')
+        # print(f'{list(data)}\n')
         return list(data)
-    print(f'NOT FOUND: No data for {crypto} in {platform}\n')
+    # print(f'NOT FOUND: No data for {crypto} in {platform}\n')
     return []
 
 
