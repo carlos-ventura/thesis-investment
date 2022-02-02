@@ -1,8 +1,11 @@
 """
-File with utils and computation functions
+File with computation functions
 """
-
+from scipy.stats.mstats import gmean
+import pandas as pd
+import numpy as np
 from scraper import get_passive_crypto_data
+from utils import daily_to_annualy
 
 
 def get_passive_investment_data(crypto_basket):
@@ -21,3 +24,27 @@ def get_passive_investment_data(crypto_basket):
         crypto_passive_basket.setdefault(crypto, crypto_passive_data)
 
     return crypto_passive_basket
+
+
+def generate_asset_data(prices, crypto):
+    """
+    Params:
+        prices: prices of an asset (panda Series)
+        crypto: boolean True if crypto False if ETF
+    Function: Generate data and stats for asset
+    Return: dict with data and stats
+    """
+    prices = prices[pd.notna(prices)]
+    returns = prices.pct_change()
+    daily_geomean_return = gmean(1 + returns.to_numpy()[1:]) - 1
+    annual_geomean_return = daily_to_annualy(daily_geomean_return, crypto=crypto)
+    daily_std = np.std(returns.to_numpy()[1:])
+    annual_std = daily_to_annualy(daily_std, crypto=crypto, std=True)
+    return {
+        'prices': prices,
+        'returns': returns,
+        'daily_a_return': daily_geomean_return,
+        'annual_a_return': annual_geomean_return,
+        'daily_std': daily_std,
+        'annual_std': annual_std
+    }
