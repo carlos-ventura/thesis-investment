@@ -1,6 +1,8 @@
 """
 File with multiple helper functions
 """
+import numpy as np
+
 
 PERIODS = 12  # Number of months per year (Assumption nr 1)
 CRYPTO_DAYS = 365
@@ -31,7 +33,7 @@ def apr_to_apy(rate, percentage=False):
     return (1 + periodic_rate) ** PERIODS - 1
 
 
-def daily_to_annualy(rate, crypto=True, percentage=False):
+def daily_to_annualy(rate, std=False, crypto=True, percentage=False):
     """
     Params:
         rate: daily rate
@@ -46,10 +48,10 @@ def daily_to_annualy(rate, crypto=True, percentage=False):
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** days - 1
+    return (1 + rate) ** days - 1 if not std else np.sqrt(days) * rate
 
 
-def annualy_to_daily(rate, crypto=True, percentage=False):
+def annualy_to_daily(rate, std=False, crypto=True, percentage=False):
     """
     Params:
         rate: annual rate
@@ -64,4 +66,4 @@ def annualy_to_daily(rate, crypto=True, percentage=False):
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** (1 / days) - 1
+    return (1 + rate) ** (1 / days) - 1 if not std else np.sqrt(1 / days) * rate
