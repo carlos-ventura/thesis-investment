@@ -3,7 +3,8 @@ File with multiple helper functions
 """
 
 PERIODS = 12  # Number of months per year (Assumption nr 1)
-DAYS = 365  # Number of days per year (Cryptocurrency)
+CRYPTO_DAYS = 365
+ETF_DAYS = 252
 
 
 def apy_to_apr(rate, percentage=False):
@@ -30,25 +31,37 @@ def apr_to_apy(rate, percentage=False):
     return (1 + periodic_rate) ** PERIODS - 1
 
 
-def daily_to_annualy(rate, percentage=False):
+def daily_to_annualy(rate, crypto=True, percentage=False):
     """
-    Params: daily rate
+    Params:
+        rate: daily rate
+        crypto: true if crypto, false if ETF
+        percentage: true if value in percentage
     Function: convert daily rate to annual rate
     Return: annualized rate
     """
+    days = CRYPTO_DAYS
+    if not crypto:
+        days = ETF_DAYS
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** DAYS - 1
+    return (1 + rate) ** days - 1
 
 
-def annualy_to_daily(rate, percentage=False):
+def annualy_to_daily(rate, crypto=True, percentage=False):
     """
-    Params: annual rate
+    Params:
+        rate: annual rate
+        crypto: true if crypto, false if ETF
+        percentage: true if value in percentage
     Function: convert annual rate to daily rate
     Return: daily rate
     """
+    days = CRYPTO_DAYS
+    if not crypto:
+        days = ETF_DAYS
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** (1 / DAYS) - 1
+    return (1 + rate) ** (1 / days) - 1
