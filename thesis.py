@@ -1,6 +1,8 @@
-# Thesis project - Investment with index funds and applied cryptocurrency
+"""
+Main file
+Thesis project - Investment with index funds and applied cryptocurrency
+"""
 
-# imports
 import pandas as pd
 import numpy as np
 import datetime
