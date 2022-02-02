@@ -4,6 +4,7 @@ Constants to generate different results with different models
 
 from compute import get_passive_investment_data
 
+WORLD_ETF_TICKERS = ["VWCE.DE", "MSCI", "ACWI"]
 
 PORTFOLIO_INDEX_WEIGHT = 0.8
 PORTFOLIO_CRYPTO_WEIGHT = 1 - PORTFOLIO_INDEX_WEIGHT
