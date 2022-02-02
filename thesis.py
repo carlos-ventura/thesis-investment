@@ -12,18 +12,14 @@ import constants as c
 
 crypto_data = {}
 
-crypto_tickers = c.CRYPTO_BASKET
-crypto_rates = c.APPLIED_CRYPTO_RATES
-
-for crypto in crypto_tickers:
+for crypto in c.CRYPTO_BASKET:
     ticker_scraper = CmcScraper(crypto)
     crypto_df = ticker_scraper.get_dataframe().sort_values(by='Date')
     crypto_dict = generate_asset_data(crypto_df['Close'], crypto=True)
-    crypto_dict['annual_passive_rates'] = crypto_rates[crypto]
+    crypto_dict['annual_passive_rates'] = c.APPLIED_CRYPTO_RATES[crypto]
     crypto_data.setdefault(crypto, crypto_dict)
     print(f"{crypto}\ndaily return: {crypto_dict['daily_a_return'] * 100} %\nannual return: {crypto_dict['annual_a_return'] * 100} %")
     print(f"daily std: {crypto_dict['daily_std'] * 100} %\nannual std: {crypto_dict['annual_std'] * 100} %")
-
 
 world_etfs_data = {}
 
