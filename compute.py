@@ -5,7 +5,7 @@ from scipy.stats.mstats import gmean
 import pandas as pd
 import numpy as np
 from scraper import get_passive_crypto_data
-from utils import daily_to_annualy
+from utils import daily_to_annualy, get_passive_object
 
 
 def get_passive_investment_data(crypto_basket):
@@ -43,8 +43,9 @@ def generate_asset_data(prices, crypto):
     return {
         'prices': prices,
         'returns': returns,
-        'daily_a_return': daily_geomean_return,
-        'annual_a_return': annual_geomean_return,
+        'cum_returns': (1 + returns).cumprod() - 1,
+        'daily_return': daily_geomean_return,
+        'annual_return': annual_geomean_return,
         'daily_std': daily_std,
         'annual_std': annual_std
     }
