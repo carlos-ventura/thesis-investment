@@ -52,11 +52,3 @@ normalized_adjusted_closing_prices = (world_etfs_pd['Adj Close']-world_etfs_pd['
 
 fig = px.line(normalized_adjusted_closing_prices, title='World ETFs Comparison (Adj Close) normalized')
 fig.show()
-
-# plt.plot(normalized_adjusted_closing_prices, label=list(world_etfs_pd['Adj Close']))
-# plt.title('Closing Prices VWCE.DE, MSCI, ACWI')
-# plt.xlabel('Year')
-# plt.ylabel('Price USD / EUR')
-# plt.legend()
-# plt.grid()
-# plt.show()
