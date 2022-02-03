@@ -49,3 +49,23 @@ def generate_asset_data(prices, crypto):
         'daily_std': daily_std,
         'annual_std': annual_std
     }
+
+
+def generate_passive_data(crypto_dict):
+    """
+    Params: crypto dictionary
+    Function: generates returns and stats
+    Return: object with data from min, max and mean rates
+    """
+    rates = crypto_dict['annual_passive_rates']
+    returns = crypto_dict['returns']
+
+    min_obj = get_passive_object(rates, returns, 'min')
+    mean_obj = get_passive_object(rates, returns, 'mean')
+    max_obj = get_passive_object(rates, returns, 'max')
+
+    return {
+        'min': min_obj,
+        'mean': mean_obj,
+        'max': max_obj,
+    }
