@@ -2,7 +2,7 @@
 File with multiple helper functions
 """
 import numpy as np
-
+from scipy.stats.mstats import gmean
 
 PERIODS = 12  # Number of months per year (Assumption nr 1)
 CRYPTO_DAYS = 365
@@ -67,3 +67,56 @@ def annualy_to_daily(rate, std=False, crypto=True, percentage=False):
     if percentage:
         rate /= 100
     return (1 + rate) ** (1 / days) - 1 if not std else np.sqrt(1 / days) * rate
+
+
+def get_passive_object(rates, returns, mode):
+    """
+    Params:
+        rates: passive annual rates
+        returns: returns for crypto
+        mode: 'min', 'max' or 'mean'
+    Function: generate crypto passive stats and returns
+    Return: dict with passive stats and returns
+    """
+    if 'min' in mode:
+        applied_returns = returns + annualy_to_daily(min(rates))
+    if 'max' in mode:
+        applied_returns = returns + annualy_to_daily(max(rates))
+    if 'mean' in mode:
+        applied_returns = returns + annualy_to_daily(np.mean(rates))
+
+    daily_std = np.std(applied_returns.to_numpy()[1:])
+    daily_return = gmean(1 + applied_returns.to_numpy()[1:]) - 1
+    annual_return = daily_to_annualy(daily_return, crypto=True)
+
+    return {
+        'passive_rate': min(rates),
+        'daily_return': daily_return,
+        'annual_return': annual_return,
+        'daily_std': daily_std,
+        'annual_std': daily_to_annualy(daily_std, crypto=True, std=True),
+        'returns': applied_returns,
+        'cum_returns': (1 + applied_returns).cumprod() - 1
+    }
+
+
+def print_stats(ticker, ticker_dict, crypto):
+    """
+    Params:
+    ticker: ticker
+    ticker_dict: dict for single ticker
+    Function: Generate prints to compare stats
+    """
+    print(f"-----{ticker}-----")
+    modes = ['min', 'mean', 'max'] if crypto else []
+    for i in range(len(modes) + 1):
+        if i == 0:
+            print("NORMAL")
+            print(f"daily return: {ticker_dict['daily_return'] * 100} %\nannual return: {ticker_dict['annual_return'] * 100} %")
+            print(f"daily std: {ticker_dict['daily_std'] * 100} %\nannual std: {ticker_dict['annual_std'] * 100} %")
+        else:
+            mode = modes[i - 1]
+            print(mode.upper())
+            print(f"daily return: {ticker_dict['passive'][mode]['daily_return'] * 100} % \
+                \nannual return: {ticker_dict['passive'][mode]['annual_return'] * 100} %")
+            print(f"daily std: {ticker_dict['passive'][mode]['daily_std'] * 100} %\nannual std: {ticker_dict['passive'][mode]['annual_std'] * 100} %")
