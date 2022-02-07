@@ -29,7 +29,6 @@ def get_passive_crypto_data(crypto):
     binance_passive_data = binance_data(crypto)
     # crypto_com_passive_data = crypto_com_data(crypto)
     # defirate_passive_data = defirate_data(crypto)
-    # blockfi_passive_data = blockfi_data(crypto)
     # okx_passive_data = okx_data(crypto)
     # kucoin_passive_data = kucoin_data(crypto)
     # kraken_passive_data = kraken_data(crypto)
@@ -38,7 +37,7 @@ def get_passive_crypto_data(crypto):
     # huobi_passive_data = huobi_data(crypto)
 
     # crypto_passive = list([*binance_passive_data, *crypto_com_passive_data, *defirate_passive_data,
-    #                       *blockfi_passive_data, *okx_passive_data, *kucoin_passive_data, *kraken_passive_data,
+    #                       *okx_passive_data, *kucoin_passive_data, *kraken_passive_data,
     #                       *gemini_passive_data, *gateio_passive_data, *huobi_passive_data])
     crypto_passive = [*binance_passive_data]
     crypto_passive = [float(rate) for rate in crypto_passive]
@@ -205,40 +204,6 @@ def defirate_data(crypto):
             defirate_passive_data = json.load(json_defirate_passive)
 
     return return_function(crypto, platform, defirate_passive_data)
-
-
-def blockfi_data(crypto):
-    """
-    Params: Crypto token/coin
-    Function: Scrap BlockFi for rates
-    Return: Rates for coin/token if available
-    """
-
-    data_path_file = 'data/blockfi_passive.json'
-    platform = "BlockFi"
-
-    if not os.path.isfile(data_path_file):
-        # print(f'Fetching passive data for {crypto} in {platform}')
-        url = "https://www.blockfi.com/page-data/rates/page-data.json"
-        request = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
-        dict_str = urllib.request.urlopen(request).read().decode("UTF-8")
-        eval_dict = ast.literal_eval(dict_str)
-        rates = eval_dict['result']['data']['allContentfulPageRates']['nodes'][0]['interestAccountRates']['rates']
-
-        blockfi_passive_data = {}
-        for rate in rates:
-            token = rate['currency'].split(' ', 1)[0].replace(' ', '')
-            apy_rate = float(rate['apy'].rstrip('%')) / 100.0
-            blockfi_passive_data.setdefault(token, []).append(apy_rate)
-
-        with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as blockfi_data_json:
-            json.dump(blockfi_passive_data, blockfi_data_json, indent=4)
-    else:
-        # print(f"Fetching passive data for {crypto} in json file {platform}...")
-        with open(f"data/{platform.lower()}_passive.json", mode="r", encoding="UTF-8") as json_blockfi_passive:
-            blockfi_passive_data = json.load(json_blockfi_passive)
-
-    return return_function(crypto, platform, blockfi_passive_data)
 
 
 def okx_data(crypto):

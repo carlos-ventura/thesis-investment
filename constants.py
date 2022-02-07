@@ -23,13 +23,12 @@ DCA_MONTHLY = 0  # default
 
 APPLIED_CRYPTO_RATES = get_passive_investment_data(CRYPTO_BASKET)
 
-PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'BlockFi', 'OKX', 'KuCoin', 'Kraken', 'Gemini', 'gate.io', 'Huobi']
+PLATFORMS = ['Binance', 'Crypto.com', 'DeFiRate', 'OKX', 'KuCoin', 'Kraken', 'Gemini', 'gate.io', 'Huobi']
 
 WEBSITES = [
     "https://www.binance.com/en/savings", "https://www.binance.com/en/pos", "https://www.binance.com/en/defi-staking",
     "https://crypto.com/eea/earn",
     "https://defirate.com/lend/",
-    "https://www.blockfi.com/rates/",
     "https://www.okx.com/earn",
     "https://www.kucoin.com/margin/lend", "https://www.kucoin.com/earn/finance/list?type=DEMAND",
     "https://www.kucoin.com/earn/finance/list?type=STAKING",
