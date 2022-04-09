@@ -6,7 +6,6 @@ import os
 import urllib
 import urllib.request
 import json
-import ast
 import re
 import shutil
 import requests
@@ -27,21 +26,22 @@ def get_passive_crypto_data(crypto):
     print("Fetching passive rates data...")
 
     binance_passive_data = binance_data(crypto)
-    # crypto_com_passive_data = crypto_com_data(crypto)
-    # defirate_passive_data = defirate_data(crypto)
-    # okx_passive_data = okx_data(crypto)
-    # kucoin_passive_data = kucoin_data(crypto)
-    # kraken_passive_data = kraken_data(crypto)
-    # gemini_passive_data = gemini_data(crypto)
-    # gateio_passive_data = gateio_data(crypto)
-    # huobi_passive_data = huobi_data(crypto)
+    crypto_com_passive_data = crypto_com_data(crypto)
+    defirate_passive_data = defirate_data(crypto)
+    okx_passive_data = okx_data(crypto)
+    kucoin_passive_data = kucoin_data(crypto)
+    kraken_passive_data = kraken_data(crypto)
+    gemini_passive_data = gemini_data(crypto)
+    gateio_passive_data = gateio_data(crypto)
+    huobi_passive_data = huobi_data(crypto)
 
-    # crypto_passive = list([*binance_passive_data, *crypto_com_passive_data, *defirate_passive_data,
-    #                       *okx_passive_data, *kucoin_passive_data, *kraken_passive_data,
-    #                       *gemini_passive_data, *gateio_passive_data, *huobi_passive_data])
-    crypto_passive = [*binance_passive_data]
+    crypto_passive = [*binance_passive_data, *crypto_com_passive_data, *defirate_passive_data, *okx_passive_data,
+                      *kucoin_passive_data, *kraken_passive_data, *gemini_passive_data, *gateio_passive_data, *huobi_passive_data]
+
+    # crypto_passive = [*binance_passive_data]
     crypto_passive = [float(rate) for rate in crypto_passive]
     crypto_passive.sort()
+    # print(crypto_passive)
     return crypto_passive
 
 
@@ -56,7 +56,7 @@ def binance_data(crypto):
 
     # print(f'Fetching passive data for {crypto} in {platform}')
 
-    rates = list([*binance_staking(crypto), *binance_savings(crypto)])
+    rates = [*binance_staking(crypto), *binance_savings(crypto)]
 
     return return_function(crypto, platform, rates, api=True)
 
@@ -88,10 +88,8 @@ def binance_savings(crypto):
     if json_data_fixed['data']:
         fixed_rates_apr.extend(json_data_fixed['data'][0]['list'])
 
-    for flex_rate in flex_rates:
-        rates.append(flex_rate['annualInterestRate'])
-    for fixed_rate_apr in fixed_rates_apr:
-        rates.append(apr_to_apy(fixed_rate_apr['interestRate']))
+    rates.extend(flex_rate['annualInterestRate'] for flex_rate in flex_rates)
+    rates.extend(apr_to_apy(fixed_rate_apr['interestRate']) for fixed_rate_apr in fixed_rates_apr)
 
     return rates
 
@@ -125,9 +123,7 @@ def binance_staking(crypto):
         else:
             rates.append(json_data_defi['data'][0]['annualInterestRate'])
 
-    for proj in projects:
-        rates.append(proj['config']['annualInterestRate'])
-
+    rates.extend(proj['config']['annualInterestRate'] for proj in projects)
     return rates
 
 
@@ -250,7 +246,7 @@ def kucoin_data(crypto):
 
     # print(f'Fetching passive data for {crypto} in {platform}')
 
-    rates = list([*kucoin_staking(crypto), *kucoin_savings(crypto), *kucoin_lending(crypto)])
+    rates = [*kucoin_staking(crypto), *kucoin_savings(crypto), *kucoin_lending(crypto)]
 
     return return_function(crypto, platform, rates, api=True)
 
@@ -325,7 +321,7 @@ def kraken_data(crypto):
         rates = []
         staking_list = [x for x in div_text if '(' in x or '%' in x]
         for i in range(0, len(staking_list), 2):
-            tokens.append(re.search('\(([^([^0-9)]+)', staking_list[i]).group(1).replace(' ', ''))
+            tokens.append(re.search('\(([^([^0-9)]+)', staking_list[i])[1].replace(' ', ''))
             rates.append(staking_list[i + 1].rstrip('%').split('-'))
 
         rates = [[apr_to_apy(float(rate) / 100) for rate in rate_list] for rate_list in rates]
@@ -380,7 +376,7 @@ def gateio_data(crypto):
     platform = "gate.io"
     # print(f'Fetching passive data for {crypto} in {platform}')
 
-    rates = list([*gateio_staking(crypto), *gateio_lending(crypto), *gateio_liquidity_mining(crypto)])
+    rates = [*gateio_staking(crypto), *gateio_lending(crypto), *gateio_liquidity_mining(crypto)]
 
     return return_function(crypto, platform, rates, api=True)
 
@@ -395,9 +391,8 @@ def gateio_staking(crypto):
     url = f'https://www.gate.io/hodl/hold_finances_search?search={crypto}'
     response = requests.request("GET", url)
     if json_data_rates := json.loads(response.text)['data']:
-        for rates_data in json_data_rates:
-            if rates_data['status'] != 3:
-                rates.append(apr_to_apy(float(rates_data['year_rate']) / 100))
+        rates.extend(apr_to_apy(float(rates_data['year_rate']) / 100) for rates_data in json_data_rates if rates_data['status'] != 3)
+
     return rates
 
 
@@ -429,8 +424,8 @@ def gateio_lending(crypto):
     rates = []
     if json_data_rates:
         number_rates = 3
-        for i in range(number_rates):
-            rates.append(apr_to_apy(float(json_data_rates[i]['year_rate'].replace('%', '')) / 100))
+        rates.extend(apr_to_apy(float(json_data_rates[i]['year_rate'].replace('%', '')) / 100) for i in range(number_rates))
+
     return rates
 
 
@@ -500,9 +495,7 @@ def huobi_savings(crypto):
     json_data_rates_limited = json.loads(response_limited.text)['data']
 
     if json_data_rates:
-        for rate in json_data_rates[0]['projects']:
-            rates.append(rate['viewYearRate'])
-
+        rates.extend(rate['viewYearRate'] for rate in json_data_rates[0]['projects'])
     if json_data_rates_limited:
         rates.append(json_data_rates_limited[0]['viewYearRate'])
 
