@@ -12,8 +12,7 @@ import requests
 import pandas as pd
 import bs4
 
-
-from utils import apr_to_apy, daily_to_annualy
+from ..utils import apr_to_apy, daily_to_annualy
 
 
 def get_passive_crypto_data(crypto):

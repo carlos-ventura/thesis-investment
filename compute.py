@@ -4,7 +4,7 @@ File with computation functions
 from scipy.stats.mstats import gmean
 import pandas as pd
 import numpy as np
-from scraper import get_passive_crypto_data
+from Scrapers.rates_scraper import get_passive_crypto_data
 from utils import daily_to_annualy, get_passive_object
 
 
