@@ -2,7 +2,7 @@
 Constants to generate different results with different models
 """
 
-from compute import get_passive_investment_data
+from .compute import get_passive_investment_data
 
 WORLD_ETF_TICKERS = ["VWCE.DE", "MSCI", "ACWI"]
 
