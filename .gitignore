@@ -136,3 +136,6 @@ venv-thesis
 
 # Pylint
 .pylintrc
+
+# New yfinance module
+yfinance
