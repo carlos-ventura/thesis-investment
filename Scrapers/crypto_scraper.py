@@ -10,7 +10,6 @@ def get_all_crypto_tickers():
     """
     Function: Scrape all crypto tickers from coinmarketcap
               Create file with all crypto tickers
-    Return: All the crypto tickers
     """
 
     print("Fetching all crypto tickers...")
@@ -24,5 +23,6 @@ def get_all_crypto_tickers():
         txt_crypto_tickers.write("\n".join(map(str, crypto_tickers)))
 
     print(f'{len(crypto_tickers)} cryptocurrency tickers were scraped from coinmarketcap')
+
 
 get_all_crypto_tickers()
