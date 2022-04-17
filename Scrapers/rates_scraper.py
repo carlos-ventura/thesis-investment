@@ -521,26 +521,3 @@ def return_function(crypto, platform, data, api=False):
         return list(data)
     # print(f'NOT FOUND: No data for {crypto} in {platform}\n')
     return []
-
-
-def refresh_data():
-    """
-    Function: Delete all data files and rerun all scraping functions
-    """
-    path = "data"
-    filelist = [f for f in os.listdir(path) if f.endswith(".json")]
-    for file in filelist:
-        os.remove(os.path.join(path, file))
-
-    get_passive_crypto_data('data refresh')
-
-
-def backup_data():
-    """
-    Function: Create a backup folder for the data in case refresh can't find data for platforms
-    """
-    destination_dir = 'backup_data'
-    source_dir = 'data'
-    if os.path.isdir(destination_dir):
-        shutil.rmtree(destination_dir)
-    shutil.copytree(source_dir, destination_dir)
