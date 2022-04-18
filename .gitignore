@@ -139,3 +139,5 @@ venv-thesis
 
 # New yfinance module
 yfinance
+
+Filters/etfs_data.pickle
