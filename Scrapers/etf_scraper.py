@@ -1,5 +1,5 @@
 """
-Scrape all ETF tickers from lib
+Scrape all ETF tickers from yahoo finance
 """
 
 import itertools
