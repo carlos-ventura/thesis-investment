@@ -1,9 +1,10 @@
 """
 Scrape all crypto tickers from yahoo finance
 """
-
-import itertools
+import time
 import requests
+
+MAX_REQUEST_YAHOO_FINANCE = 10000
 
 
 def get_all_crypto_tickers():
@@ -14,27 +15,26 @@ def get_all_crypto_tickers():
 
     print("Fetching all crypto tickers...")
 
-    max_size_request = 1
+    max_size_request = 100
 
     cookies = {
-        'B': 'f7i1kt5h5sqj5&b=3&s=te',
+        'B': '3t00p3th5u5k9&b=3&s=s2',
     }
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:100.0) Gecko/20100101 Firefox/100.0',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36 OPR/38.0.2220.41',
     }
 
     params = {
-        'crumb': '5rQZsj6YTeI',
+        'crumb': 'u8JdN/0.c1I',
     }
 
-    crypto_tickers = []
-
-    for top_offset in range(max_size_request, 10000 + max_size_request, max_size_request):
+    crypto_tickers = ['XVC-USD']  # Bug in yahoo finance
+    for offset in range(0, MAX_REQUEST_YAHOO_FINANCE, max_size_request):
         json_data = {
-            'offset': top_offset - max_size_request,
+            'offset': offset if offset < MAX_REQUEST_YAHOO_FINANCE else 0,
             'size': max_size_request,
-            'sortType': 'desc',
+            'sortType': 'asc' if offset < 10000 else 'desc',
             'sortField': 'ticker',
             'quoteType': 'CRYPTOCURRENCY',
             'query': {
@@ -61,10 +61,18 @@ def get_all_crypto_tickers():
         }
         response = requests.post('https://query2.finance.yahoo.com/v1/finance/screener',
                                  headers=headers, params=params, cookies=cookies, json=json_data)
+        time.sleep(10)
         json_response = response.json()
-        print(json_response)
-        crypto_tickers.extend(
-            quote['symbol'] for quote in json_response['finance']['result'][0]['quotes'])
+        print(offset)
+        print(f"Size of quotes {len(json_response['finance']['result'][0]['quotes'])}")
+        for quote in json_response['finance']['result'][0]['quotes']:
+            try:
+                crypto_tickers.append(quote['symbol'])
+            except Exception as e:
+                print(e)
+        print(f"Length before set {len(crypto_tickers)}")
+        #crypto_tickers = set(crypto_tickers)
+        print(f'Length after set {len(set(crypto_tickers))}')
 
     with open('../data/new_crypto_tickers.txt', 'w', encoding='UTF-8') as txt_crypto_tickers:
         txt_crypto_tickers.write("\n".join(map(str, crypto_tickers)))
