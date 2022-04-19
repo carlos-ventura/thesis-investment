@@ -63,8 +63,6 @@ def get_all_crypto_tickers():
                                  headers=headers, params=params, cookies=cookies, json=json_data)
         time.sleep(10)
         json_response = response.json()
-        print(offset)
-        print(f"Size of quotes {len(json_response['finance']['result'][0]['quotes'])}")
         for quote in json_response['finance']['result'][0]['quotes']:
             try:
                 crypto_tickers.append(quote['symbol'])
