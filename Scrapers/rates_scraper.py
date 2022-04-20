@@ -1,7 +1,7 @@
 """
 Scrape data from platforms for crypto lending, staking and savings
 """
-
+import sys
 import os
 import urllib
 import urllib.request
@@ -12,7 +12,9 @@ import requests
 import pandas as pd
 import bs4
 
-from ..utils import apr_to_apy, daily_to_annualy
+sys.path.append('../')
+import utils as u # pylint: disable=import-error $disable=wrong-import-position
+sys.path.remove('../')
 
 
 def get_passive_crypto_data(crypto):
@@ -88,7 +90,7 @@ def binance_savings(crypto):
         fixed_rates_apr.extend(json_data_fixed['data'][0]['list'])
 
     rates.extend(flex_rate['annualInterestRate'] for flex_rate in flex_rates)
-    rates.extend(apr_to_apy(fixed_rate_apr['interestRate']) for fixed_rate_apr in fixed_rates_apr)
+    rates.extend(u.apr_to_apy(fixed_rate_apr['interestRate']) for fixed_rate_apr in fixed_rates_apr)
 
     return rates
 
@@ -151,7 +153,7 @@ def crypto_com_data(crypto):
                 passive_rates_apr_pd[0] = passive_rates_apr_pd[0].str.rstrip('*')
             else:
                 passive_rates_apr_pd[i] = passive_rates_apr_pd[i].str.rstrip('%').astype('float') / 100
-                passive_rates_apr_pd[i] = passive_rates_apr_pd[i].apply(apr_to_apy)
+                passive_rates_apr_pd[i] = passive_rates_apr_pd[i].apply(u.apr_to_apy)
 
         crypto_com_passive_data = passive_rates_apr_pd.set_index(0).T.to_dict('list')
 
@@ -260,7 +262,7 @@ def kucoin_staking(crypto):
     url = f"https://www.kucoin.com/_pxapi/pool-staking/v2/products/stakings?keyword={crypto}"
     response = requests.request("GET", url)
     json_data_rates = json.loads(response.text)['items']
-    return [apr_to_apy((float(rate['apr']) + float(rate['pol_apr'])) / 100) for rate in json_data_rates]
+    return [u.apr_to_apy((float(rate['apr']) + float(rate['pol_apr'])) / 100) for rate in json_data_rates]
 
 
 def kucoin_savings(crypto):
@@ -293,7 +295,7 @@ def kucoin_lending(crypto):
     url = "https://www.kucoin.com/_api/margin-loan/loan/order/query-min-int-rate?lang=en_US"
     response = requests.request("POST", url, data=form_data)
     json_data__daily_rates = json.loads(response.text)['data']
-    return [apr_to_apy(daily_to_annualy(daily_rates['interestRate'])) for daily_rates in json_data__daily_rates]
+    return [u.apr_to_apy(u.daily_to_annualy(daily_rates['interestRate'])) for daily_rates in json_data__daily_rates]
 
 
 def kraken_data(crypto):
@@ -323,7 +325,7 @@ def kraken_data(crypto):
             tokens.append(re.search('\(([^([^0-9)]+)', staking_list[i])[1].replace(' ', ''))
             rates.append(staking_list[i + 1].rstrip('%').split('-'))
 
-        rates = [[apr_to_apy(float(rate) / 100) for rate in rate_list] for rate_list in rates]
+        rates = [[u.apr_to_apy(float(rate) / 100) for rate in rate_list] for rate_list in rates]
         kraken_passive_data = dict(zip(tokens, rates))
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as kraken_data_json:
             json.dump(kraken_passive_data, kraken_data_json, indent=4)
@@ -390,7 +392,7 @@ def gateio_staking(crypto):
     url = f'https://www.gate.io/hodl/hold_finances_search?search={crypto}'
     response = requests.request("GET", url)
     if json_data_rates := json.loads(response.text)['data']:
-        rates.extend(apr_to_apy(float(rates_data['year_rate']) / 100) for rates_data in json_data_rates if rates_data['status'] != 3)
+        rates.extend(u.apr_to_apy(float(rates_data['year_rate']) / 100) for rates_data in json_data_rates if rates_data['status'] != 3)
 
     return rates
 
@@ -423,7 +425,7 @@ def gateio_lending(crypto):
     rates = []
     if json_data_rates:
         number_rates = 3
-        rates.extend(apr_to_apy(float(json_data_rates[i]['year_rate'].replace('%', '')) / 100) for i in range(number_rates))
+        rates.extend(u.apr_to_apy(float(json_data_rates[i]['year_rate'].replace('%', '')) / 100) for i in range(number_rates))
 
     return rates
 
@@ -465,7 +467,7 @@ def huobi_staking():
         json_data_rates_v2 = json.loads(response_v2.text)['data']
         for rate in json_data_rates:
             huobi_passive_data.setdefault(rate['currency'], [float(rate['annualizedRate'])])
-        huobi_passive_data.setdefault('BETH', [apr_to_apy(float(json_data_rates_v2['b']))])
+        huobi_passive_data.setdefault('BETH', [u.apr_to_apy(float(json_data_rates_v2['b']))])
 
         with open(f"data/{platform.lower()}_passive.json", mode="w", encoding="UTF-8") as huobi_data_json:
             json.dump(huobi_passive_data, huobi_data_json, indent=4)
@@ -521,3 +523,5 @@ def return_function(crypto, platform, data, api=False):
         return list(data)
     # print(f'NOT FOUND: No data for {crypto} in {platform}\n')
     return []
+
+get_passive_crypto_data('BTC')

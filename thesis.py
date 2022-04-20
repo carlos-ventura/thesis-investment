@@ -7,9 +7,9 @@ import yfinance as yf
 from cryptocmd import CmcScraper
 import plotly.express as px
 
-from . import constants as c
-from .compute import generate_asset_data, generate_passive_data
-from .utils import print_stats
+import constants as c
+from compute import generate_asset_data, generate_passive_data
+from utils import print_stats
 
 
 crypto_data = {}
