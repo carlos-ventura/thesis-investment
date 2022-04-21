@@ -1,30 +1,13 @@
-"""
-Filter ETFs
-"""
+import time
+from utils_filters import volume_filter
 
-import pickle
-import yfinance as yf
+ETF_FILENAME = '../data/etf_tickers.txt'
+MINIMUM_VOLUME_2021 = 50000
+VOLUME_START_DATE = '2021-01-01'
+VOLUME_END_DATE = '2022-01-01'
 
-ETF_TICKER_FILENAME = '../data/etf_tickers.txt'
-VOLUME_PREV_YEAR_MINIMUM = 50000
-
-etf_tickers = []
-
-with open(ETF_TICKER_FILENAME, "r", encoding="UTF-8") as etf_ticker_file:
-    etf_tickers = etf_ticker_file.read().split('\n')
-
-# etf_tickers_data = yf.download(etf_tickers, start='2021-01-01', end='2021-12-31')
-print('Finished downloading ticker data')
-
-# with open('etfs_data.pickle', 'wb') as f:
-#    pickle.dump(etf_tickers_data, f)
-
-with open('etfs_data.pickle', 'rb') as f:
-    etf_tickers_data = pickle.load(f)
-
-new_etf_tickers = [ticker for ticker in etf_tickers if etf_tickers_data['Volume'][ticker].mean() > VOLUME_PREV_YEAR_MINIMUM]
-
-with open('../data/etf_tickers_volume_filtered.txt', 'w', encoding='UTF-8') as txt_volume_filtered_etf:
-    txt_volume_filtered_etf.write("\n".join(map(str, new_etf_tickers)))
-
-print(len(new_etf_tickers))
+if __name__ == '__main__':
+    start_time = time.time()
+    volume_filtered_etf_tickers = volume_filter(ETF_FILENAME, VOLUME_START_DATE, VOLUME_END_DATE, MINIMUM_VOLUME_2021, 'etf')
+    print(len(volume_filtered_etf_tickers))
+    print(f"Filter took {time.time() - start_time}s to run")

@@ -1,34 +1,13 @@
-"""
-Filter Crypto
-"""
+import time
+from utils_filters import volume_filter
 
-from time import sleep
-import winsound
-from cryptocmd import CmcScraper
+CRYPTO_FILENAME = '../data/crypto_tickers.txt'
+MINIMUM_VOLUME_2021 = 50000
+VOLUME_START_DATE = '2021-01-01'
+VOLUME_END_DATE = '2022-01-01'
 
-CRYPTO_TICKER_FILENAME = '../data/crypto_tickers.txt'
-VOLUME_PREV_YEAR_MINIMUM = 50000
-
-crypto_tickers = []
-
-with open(CRYPTO_TICKER_FILENAME, "r", encoding="UTF-8") as crypto_ticker_file:
-    crypto_tickers = crypto_ticker_file.read().split('\n')
-
-new_crypto_tickers = []
-
-for index, ticker in enumerate(crypto_tickers):
-    print(index)
-    sleep(1)
-    crypto = CmcScraper(ticker, start_date='01-01-2021', end_date='31-12-2021', order_ascending=True)
-    try:
-        crypto_df = crypto.get_dataframe()
-    except Exception:
-        continue
-    crypto_df['Coin Volume'] = crypto_df['Volume'] / crypto_df['Close']
-    if crypto_df['Coin Volume'].mean() > VOLUME_PREV_YEAR_MINIMUM:
-        new_crypto_tickers.append(ticker)
-
-with open('crypto_tickers_volume_filtered.txt', 'w', encoding='UTF-8') as txt_volume_filtered_crypto:
-    txt_volume_filtered_crypto.write("\n".join(map(str, new_crypto_tickers)))
-
-print(len(new_crypto_tickers))
+if __name__ == '__main__':
+    start_time = time.time()
+    volume_filtered_etf_tickers = volume_filter(CRYPTO_FILENAME, VOLUME_START_DATE, VOLUME_END_DATE, MINIMUM_VOLUME_2021, 'crypto')
+    print(len(volume_filtered_etf_tickers))
+    print(f"Filter took {time.time() - start_time}s to run")
