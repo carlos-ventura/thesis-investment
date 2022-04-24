@@ -1,3 +1,4 @@
+import json
 import yfinance as yf
 import numpy as np
 
@@ -31,5 +32,22 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
 
     with open(f'../data/{ticker_type}_tickers_volume_filtered.txt', 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
+
+    return new_tickers
+
+def rates_filter(filename:str):
+    tickers = []
+    rates_dict = {}
+    with open(filename, "r", encoding="UTF-8") as ticker_file:
+        tickers = ticker_file.read().split('\n')
+    with open('../data/rates.json', 'r', encoding="UTF-8") as rates_file:
+        rates_dict = json.load(rates_file)
+    all_keys = rates_dict.keys()
+
+    all_keys = [f'{key}-USD' for key in all_keys]
+    new_tickers = [ticker for ticker in tickers if ticker in all_keys]
+
+    with open('../data/crypto_tickers_rates_filtered.txt', 'w', encoding='UTF-8') as txt_rates_filtered:
+        txt_rates_filtered.write("\n".join(map(str, new_tickers)))
 
     return new_tickers
