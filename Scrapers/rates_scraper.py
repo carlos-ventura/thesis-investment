@@ -302,12 +302,15 @@ def huobi():
     huobi_savings()
     huobi_staking()
 
-def create_json():
+def create_files():
     with open('../data/rates.json', 'w', encoding='utf8') as crypto_dict_rates:
         json.dump(RATES_CRYPTO_DICT, crypto_dict_rates, indent=4)
+    with open('../data/crypto_ticker_rates.txt', 'w', encoding='utf8') as crypto_dict_rates:
+        crypto_dict_rates.write("\n".join(map(str, RATES_CRYPTO_DICT.keys())))
 
 if __name__ == "__main__":
     start_time = time.time()
+
     binance()
     crypto_com()
     defirate()
@@ -318,5 +321,6 @@ if __name__ == "__main__":
     gateio()
     huobi()
 
-    create_json()
+    create_files()
+
     print(f"Scraping rates took --- {time.time() - start_time} seconds ---")
