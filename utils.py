@@ -48,7 +48,7 @@ def daily_to_annualy(rate, std=False, crypto=True, percentage=False):
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** days - 1 if not std else np.sqrt(days) * rate
+    return np.sqrt(days) * rate if std else (1 + rate) ** days - 1
 
 
 def annualy_to_daily(rate, std=False, crypto=True, percentage=False):
@@ -66,8 +66,7 @@ def annualy_to_daily(rate, std=False, crypto=True, percentage=False):
     rate = float(rate)
     if percentage:
         rate /= 100
-    return (1 + rate) ** (1 / days) - 1 if not std else np.sqrt(1 / days) * rate
-
+    return np.sqrt(1 / days) * rate if std else (1 + rate) ** (1 / days) - 1
 
 def get_passive_object(rates, returns, mode):
     """
@@ -93,8 +92,6 @@ def get_passive_object(rates, returns, mode):
         'passive_rate': min(rates),
         'daily_return': daily_return,
         'annual_return': annual_return,
-        'daily_std': daily_std,
-        'annual_std': daily_to_annualy(daily_std, crypto=True, std=True),
         'returns': applied_returns,
         'cum_returns': (1 + applied_returns).cumprod() - 1
     }
@@ -119,4 +116,3 @@ def print_stats(ticker, ticker_dict, crypto):
             print(mode.upper())
             print(f"daily return: {ticker_dict['passive'][mode]['daily_return'] * 100} % \
                 \nannual return: {ticker_dict['passive'][mode]['annual_return'] * 100} %")
-            print(f"daily std: {ticker_dict['passive'][mode]['daily_std'] * 100} %\nannual std: {ticker_dict['passive'][mode]['annual_std'] * 100} %")
