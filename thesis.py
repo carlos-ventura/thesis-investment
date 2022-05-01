@@ -15,7 +15,7 @@ MONEY_INVESTED = 100
 
 crypto_data = {}
 crypto = 'BTC-USD'
-crypto_df = yf.download(crypto)
+crypto_df = yf.download(crypto, interval='1wk')
 crypto_df.drop(['Open', 'High', 'Low', 'Volume', 'Adj Close'], axis=1, inplace=True)
 crypto_dict = generate_asset_data(crypto_df['Close'], crypto=True)
 crypto_dict['annual_passive_rates'] = [0.01, 0.002, 0.075]
@@ -36,7 +36,7 @@ fig = px.line(crypto_df, title=f'{crypto} comparison of investing vs investing w
 
 world_etfs_data = {}
 
-world_etfs_pd = yf.download(c.WORLD_ETF_TICKERS, start='2018-01-01',end='2022-01-01', interval="1d")
+world_etfs_pd = yf.download(c.WORLD_ETF_TICKERS, start='2018-01-01',end='2022-01-01', interval="1wk")
 print(world_etfs_pd)
 
 for world_etf in c.WORLD_ETF_TICKERS:

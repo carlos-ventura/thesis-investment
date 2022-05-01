@@ -4,26 +4,7 @@ File with computation functions
 from scipy.stats.mstats import gmean
 import pandas as pd
 import numpy as np
-from utils import daily_to_annualy, get_passive_object
-
-
-def get_passive_investment_data(crypto_basket):
-    """
-    Argument: Basket of cryptos (ticker)
-    Function: Generate types of passive investment on the basket of cryptocurrencies
-    Return: Dictionary with options
-    """
-
-    crypto_passive_basket = {}
-
-    for crypto in crypto_basket:
-
-        crypto = str(crypto.upper())
-        crypto_passive_data = get_passive_crypto_data(crypto)
-        crypto_passive_basket.setdefault(crypto, crypto_passive_data)
-
-    return crypto_passive_basket
-
+from utils import convert_to_annual, get_passive_object
 
 def generate_asset_data(prices, crypto):
     """
@@ -35,17 +16,17 @@ def generate_asset_data(prices, crypto):
     """
     prices = prices[pd.notna(prices)]
     returns = prices.pct_change()
-    daily_geomean_return = gmean(1 + returns.to_numpy()[1:]) - 1
-    annual_geomean_return = daily_to_annualy(daily_geomean_return, crypto=crypto)
-    daily_std = np.std(returns.to_numpy()[1:])
-    annual_std = daily_to_annualy(daily_std, crypto=crypto, std=True)
+    weekly_geomean_return = gmean(1 + returns.to_numpy()[1:]) - 1
+    annual_geomean_return = convert_to_annual(weekly_geomean_return, 'w', crypto=crypto)
+    weekly_std = np.std(returns.to_numpy()[1:])
+    annual_std = convert_to_annual(weekly_std, 'w', crypto=crypto, std=True)
     return {
         'prices': prices,
         'returns': returns,
         'cum_returns': (1 + returns).cumprod() - 1,
-        'daily_return': daily_geomean_return,
+        'weekly_return': weekly_geomean_return,
         'annual_return': annual_geomean_return,
-        'daily_std': daily_std,
+        'weekly_std': weekly_std,
         'annual_std': annual_std
     }
 
