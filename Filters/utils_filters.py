@@ -1,10 +1,14 @@
-from itertools import repeat
-import json
-import yfinance as yf
-import numpy as np
 import concurrent.futures
+import json
 import time
+from itertools import repeat
+
+import numpy as np
 import requests_cache
+import yfinance as yf
+
+from MST import MinimumSpanningTree
+
 
 def date_filter(filename:str, start_date:str, ticker_type:str):
     tickers = []
@@ -105,3 +109,21 @@ def er_helper(chunk:list, maximum:float, session):
             new_tickers.append(ticker.ticker)
             continue
     return {'new_tickers': new_tickers, 'none_tickers': none_tickers}
+
+def mst_filter(filename:str):
+    with open(filename, "r", encoding="UTF-8") as ticker_file:
+        tickers = ticker_file.read().split('\n')
+
+    tickers_data = yf.download(tickers[:100], start="2021-01-01", end="2022-01-01", interval="1wk")["Adj Close"]
+    tickers_data.dropna(inplace=True)
+    tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN values
+    print(tickers_return)
+    new_tickers = []
+
+    while tickers_return.shape[1] > 30:
+        new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
+
+    print(tickers_return)
+    print(new_tickers)
+
+mst_filter('../data/etf_tickers_date_filtered.txt')
