@@ -57,7 +57,7 @@ def get_all_etf_tickers():
         json_response = response.json()
         etf_tickers.extend(quote['symbol'] for quote in json_response['finance']['result'][0]['quotes'])
 
-    with open('../data/etf_tickers.txt', 'w', encoding='UTF-8') as txt_etf_tickers:
+    with open('../data/etf-tickers.txt', 'w', encoding='UTF-8') as txt_etf_tickers:
         txt_etf_tickers.write("\n".join(map(str, etf_tickers)))
 
     print(f'{len(etf_tickers)} ETF tickers were scraped from Yahoo Finance')

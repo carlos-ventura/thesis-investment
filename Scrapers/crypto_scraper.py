@@ -68,12 +68,9 @@ def get_all_crypto_tickers():
                 crypto_tickers.append(quote['symbol'])
             except Exception as e:
                 print(e)
-        print(f"Length before set {len(crypto_tickers)}")
-        #crypto_tickers = set(crypto_tickers)
-        print(f'Length after set {len(set(crypto_tickers))}')
 
-    with open('../data/new_crypto_tickers.txt', 'w', encoding='UTF-8') as txt_crypto_tickers:
-        txt_crypto_tickers.write("\n".join(map(str, crypto_tickers)))
+    with open('../data/crypto-tickers.txt', 'w', encoding='UTF-8') as txt_crypto_tickers:
+        txt_crypto_tickers.write("\n".join(map(str, set(crypto_tickers))))
 
     print(f'{len(crypto_tickers)} crypto tickers were scraped from Yahoo Finance')
 

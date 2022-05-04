@@ -10,7 +10,7 @@ import yfinance as yf
 from MST import MinimumSpanningTree
 
 
-def date_filter(filename:str, start_date:str, ticker_type:str):
+def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
     tickers = []
     with open(filename, "r", encoding="UTF-8") as ticker_file:
         tickers = ticker_file.read().split('\n')
@@ -19,10 +19,8 @@ def date_filter(filename:str, start_date:str, ticker_type:str):
     print(tickers_data)
     new_tickers = [ticker for ticker in tickers if not tickers_data['Adj Close'][ticker].isnull().all()]
 
-    with open(f'../data/{ticker_type}_tickers_date_filtered.txt', 'w', encoding='UTF-8') as txt_date_filtered:
+    with open(f'../data/{ticker_type}-{target_name}-f.txt', 'w', encoding='UTF-8') as txt_date_filtered:
         txt_date_filtered.write("\n".join(map(str, new_tickers)))
-
-    return new_tickers
 
 
 def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticker_type:str):
@@ -38,10 +36,8 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
     else:
         new_tickers = [ticker for ticker in tickers if (tickers_data['Volume'][ticker] / tickers_data['Close'][ticker]).mean() >= minimum]
 
-    with open(f'../data/{ticker_type}_tickers_volume_filtered.txt', 'w', encoding='UTF-8') as txt_volume_filtered:
+    with open(f'../data/{ticker_type}-volume-f.txt', 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
-
-    return new_tickers
 
 def rates_filter(filename:str):
     tickers = []
@@ -55,10 +51,8 @@ def rates_filter(filename:str):
     all_keys = [f'{key}-USD' for key in all_keys]
     new_tickers = [ticker for ticker in tickers if ticker in all_keys]
 
-    with open('../data/crypto_tickers_rates_filtered.txt', 'w', encoding='UTF-8') as txt_rates_filtered:
+    with open('../data/crypto-rates-f.txt', 'w', encoding='UTF-8') as txt_rates_filtered:
         txt_rates_filtered.write("\n".join(map(str, new_tickers)))
-
-    return new_tickers
 
 def expense_ratio_filter_yf(filename:str, maximum:float, check_filtered=False, check_none=False):
     session = requests_cache.CachedSession('dns.cache')
@@ -69,12 +63,12 @@ def expense_ratio_filter_yf(filename:str, maximum:float, check_filtered=False, c
     with open(filename, "r", encoding="UTF-8") as ticker_file:
         tickers = ticker_file.read().split('\n')
     if check_filtered:
-        with open('../data/etf_tickers_er_filtered.txt', "r", encoding="UTF-8") as ticker_file:
+        with open('../data/etf-er-f.txt', "r", encoding="UTF-8") as ticker_file:
             new_tickers = ticker_file.read().split('\n')
             if not check_none:
                 tickers = list(set(tickers) - set(new_tickers))
     if check_none:
-        with open('../data/etf_tickers_er_none.txt', "r", encoding="UTF-8") as ticker_file:
+        with open('../data/etf-er-none.txt', "r", encoding="UTF-8") as ticker_file:
             tickers = ticker_file.read().split('\n')
 
     tickers_to_analyse = tickers
@@ -86,13 +80,12 @@ def expense_ratio_filter_yf(filename:str, maximum:float, check_filtered=False, c
             new_tickers.extend(result['new_tickers'])
             none_tickers.extend(result['none_tickers'])
 
-    with open('../data/etf_tickers_er_filtered.txt', 'w', encoding='UTF-8') as txt_er_filtered:
+    with open('../data/etf-er-f.txt', 'w', encoding='UTF-8') as txt_er_filtered:
         txt_er_filtered.write("\n".join(map(str, new_tickers)))
 
-    with open('../data/etf_tickers_er_none.txt', 'w', encoding='UTF-8') as txt_er_filtered:
+    with open('../data/etf-er-none.txt', 'w', encoding='UTF-8') as txt_er_filtered:
         txt_er_filtered.write("\n".join(map(str, none_tickers)))
 
-    return new_tickers
 
 def er_helper(chunk:list, maximum:float, session):
     new_tickers = []
@@ -126,4 +119,4 @@ def mst_filter(filename:str):
     print(tickers_return)
     print(new_tickers)
 
-mst_filter('../data/etf_tickers_date_filtered.txt')
+mst_filter('../data/etf-date-f.txt')
