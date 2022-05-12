@@ -80,3 +80,11 @@ def print_stats(ticker, ticker_dict, crypto):
             print(mode.upper())
             print(f"weekly return: {ticker_dict['passive'][mode]['weekly_return'] * 100} % \
                 \nannual return: {ticker_dict['passive'][mode]['annual_return'] * 100} %")
+
+def sharpe_ratio(returns, risk_free=0):
+    weekly_geomean= gmean(1 + returns.to_numpy()[1:]) - 1
+    annual_geomean= convert_to_annual(weekly_geomean, 'w')
+    weekly_std = np.std(returns.to_numpy()[1:])
+    annual_std = convert_to_annual(weekly_std, 'w', std=True)
+
+    return (annual_geomean - risk_free)/ annual_std
