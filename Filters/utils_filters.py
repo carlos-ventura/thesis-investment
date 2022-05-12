@@ -143,7 +143,7 @@ def mst_filter(filename:str, start_date:str, end_date:str, target_name:str, tick
         new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
         print(len(new_tickers))
 
-    with open(f"../data/{ticker_type}-{target_name}-mst-f", 'w', encoding='UTF-8') as txt_mst_filtered:
+    with open(f"../data/{ticker_type}-{target_name}-mst-f.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
     print(new_tickers)
