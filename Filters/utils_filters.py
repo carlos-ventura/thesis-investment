@@ -30,7 +30,7 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
     with open(filename, "r", encoding="UTF-8") as ticker_file:
         tickers = ticker_file.read().split('\n')
 
-    tickers_data = yf.download(tickers, start=start_date, end=end_date, interval='1wk').sort_index()
+    tickers_data = yf.download(tickers, start=start_date, end=end_date, interval='1d')
     tickers_data.dropna(how='all', inplace=True)
     print(tickers_data)
     if ticker_type == 'etf':
@@ -38,7 +38,7 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
     else:
         new_tickers = [ticker for ticker in tickers if (tickers_data['Volume'][ticker] / tickers_data['Close'][ticker]).mean() >= minimum]
 
-    with open(f'../data/{ticker_type}-volume-f.txt', 'w', encoding='UTF-8') as txt_volume_filtered:
+    with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
 
 def rates_filter(filename:str):
@@ -128,17 +128,23 @@ def er_helper(chunk:list, maximum:float, session):
         above_tickers.append(ticker.ticker)
     return {'new_tickers': new_tickers, 'none_tickers': none_tickers, 'above_tickers': above_tickers}
 
-def mst_filter(filename:str):
+def mst_filter(filename:str, start_date:str, end_date:str, target_name:str, ticker_type:str):
     with open(filename, "r", encoding="UTF-8") as ticker_file:
         tickers = ticker_file.read().split('\n')
 
-    tickers_data = yf.download(tickers[:100], start="2021-01-01", end="2022-01-01", interval="1wk")["Adj Close"]
-    tickers_data.dropna(inplace=True)
+    tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
+    tickers_data.dropna(how='all', inplace=True)
+    print(tickers_data)
     tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN values
     new_tickers = []
 
-    while tickers_return.shape[1] > 30:
-        new_tickers,_,_,_ = MinimumSpanningTree(tickers_return)
+    while tickers_return.shape[1] > 20:
+        print('Applying mst...')
+        new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
+        print(len(new_tickers))
+
+    with open(f"../data/{ticker_type}-{target_name}-mst-f", 'w', encoding='UTF-8') as txt_mst_filtered:
+        txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
     print(new_tickers)
 
