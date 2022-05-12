@@ -115,7 +115,7 @@ def defirate():
     df_list = pd.read_html(html)
     passive_rates_pd = df_list[1]
     passive_rates_pd = passive_rates_pd.T.reset_index(drop=True).T
-    for i in range(11):
+    for i in range(len(passive_rates_pd.columns) - 1):
         passive_rates_pd[i+1] = passive_rates_pd[i + 1].str.strip('%').replace('–', '0').astype('float') / 100
     defirate_passive_data = passive_rates_pd.set_index(0).T.to_dict('list')
 
@@ -190,6 +190,7 @@ def kraken_request(uri_path, data, api_key, api_sec, api_url):
     return requests.post((api_url + uri_path), headers=headers, data=data)
 
 def kraken():
+    # Need api key
     scraper_print('Kraken')
     api_key = os.environ.get('kraken-api-key')
     api_sec = os.environ.get('kraken-secret')
@@ -314,7 +315,7 @@ if __name__ == "__main__":
     defirate()
     okx()
     kucoin()
-    kraken()
+    # kraken()
     gemini()
     gateio()
     huobi()
