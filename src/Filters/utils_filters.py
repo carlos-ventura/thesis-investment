@@ -8,8 +8,8 @@ import numpy as np
 import requests_cache
 import yfinance as yf
 
-from MST import MinimumSpanningTree
-
+import src.utils as u
+from src.Filters.MST import MinimumSpanningTree
 
 def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
     tickers = []
@@ -128,24 +128,32 @@ def er_helper(chunk:list, maximum:float, session):
         above_tickers.append(ticker.ticker)
     return {'new_tickers': new_tickers, 'none_tickers': none_tickers, 'above_tickers': above_tickers}
 
-def mst_filter(filename:str, start_date:str, end_date:str, target_name:str, ticker_type:str):
-    with open(filename, "r", encoding="UTF-8") as ticker_file:
-        tickers = ticker_file.read().split('\n')
+def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ticker_type:str, min_sr=False, sr_value=0):
+    tickers=[]
+    new_tickers=[]
+    for filename in filenames:
+        with open(filename, "r", encoding="UTF-8") as ticker_file:
+            tickers.extend(ticker_file.read().split('\n'))
 
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
-    print(tickers_data)
-    tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN values
-    new_tickers = []
+    tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN value
 
-    while tickers_return.shape[1] > 20:
+    if min_sr:
+        drop_list = [ticker for ticker in tickers if u.sharpe_ratio(tickers_return[ticker]) < sr_value]
+        tickers_return.drop(drop_list, axis=1, inplace=True)
+        ticker_type += f'-sr{sr_value}'
+        print(len(drop_list))
+        new_tickers = list(set(tickers) - set(drop_list))
+
+    while tickers_return.shape[1] > 30:
         print('Applying mst...')
         new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
         print(len(new_tickers))
 
-    with open(f"../data/{ticker_type}-{target_name}-mst-f.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
+    print(tickers_return)
+
+    with open(f"../data/mst/{ticker_type}-{target_name}.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
-    print(new_tickers)
-
-# mst_filter('../data/etf-date-f.txt')
+    tickers_return.to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")

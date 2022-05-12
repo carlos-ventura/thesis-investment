@@ -88,3 +88,6 @@ def sharpe_ratio(returns, risk_free=0):
     annual_std = convert_to_annual(weekly_std, 'w', std=True)
 
     return (annual_geomean - risk_free)/ annual_std
+
+def new_function():
+    pass

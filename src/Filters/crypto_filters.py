@@ -1,5 +1,5 @@
 import time
-from utils_filters import rates_filter, volume_filter, date_filter, mst_filter
+from src.Filters.utils_filters import volume_filter, expense_ratio_filter_yf, date_filter,mst_filter
 
 SOURCE_CRYPTO = '../data/crypto_tickers.txt'
 CRYPTO_FILTERED_VOLUME = '../data/crypto-volume-f.txt'
@@ -24,7 +24,7 @@ if __name__ == '__main__':
         target_name=date.split('-', maxsplit=1)[0]
         # time.sleep(60)
         # date_filter(CRYPTO_FILTERED_VOLUME, start_date=date, ticker_type='crypto', target_name=target_name)
-        mst_filter(f'../data/crypto-{target_name}-f.txt', start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto')
+        mst_filter([f'../data/crypto-{target_name}-f.txt'], start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto')
         # volume_filter(f'../data/crypto-{target_name}-f.txt', date, VOLUME_END_DATE, MINIMUM_DAILY_VOLUME, 'crypto')
         print(f"Finished date filter for {date}")
 

@@ -16,9 +16,7 @@ import collections
 import pandas as pd
 import requests
 
-sys.path.append('../')
-import utils as u # pylint: disable=import-error $disable=wrong-import-position
-sys.path.pop()
+import src.utils as u
 
 RATES_CRYPTO_DICT = collections.defaultdict(list)
 
@@ -168,7 +166,7 @@ def kucoin_lending_helper(asset, url):
     json_data = requests.request("POST", url, data=form_data,).json()
     rates = []
     for daily_rates in json_data['data']:
-        apy = u.apr_to_apy(u.daily_to_annualy(daily_rates['interestRate']))
+        apy = u.apr_to_apy(u.convert_to_annual(daily_rates['interestRate'], 'd', crypto=True))
         rates.append(apy)
     return {'token': token, 'rates': rates}
 

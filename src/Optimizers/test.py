@@ -1,3 +1,4 @@
+import sys
 import yfinance as yf
 import pandas as pd
 from scipy.stats.mstats import gmean
@@ -7,10 +8,7 @@ from pypfopt import risk_models
 from pypfopt import expected_returns
 from pypfopt import objective_functions
 
-import sys
-sys.path.append('../')
-import utils as u # pylint: disable=import-error $disable=wrong-import-position
-sys.path.pop()
+import src.utils as u
 
 END_DATE = '2022-05-01'
 

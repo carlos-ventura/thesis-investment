@@ -7,9 +7,9 @@ import yfinance as yf
 import plotly.express as px
 import plotly
 
-import constants as c
-from compute import generate_asset_data, generate_passive_data
-from utils import print_stats
+import src.constants as c
+from src.compute import generate_asset_data, generate_passive_data
+from src.utils import print_stats
 
 MONEY_INVESTED = 100
 

@@ -4,7 +4,7 @@ File with computation functions
 from scipy.stats.mstats import gmean
 import pandas as pd
 import numpy as np
-from utils import convert_to_annual, get_passive_object
+from src.utils import convert_to_annual, get_passive_object
 
 def generate_asset_data(prices, crypto):
     """
