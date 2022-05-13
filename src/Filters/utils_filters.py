@@ -3,14 +3,10 @@ import json
 import time
 from itertools import repeat
 import os
-from pandas.tseries.frequencies import to_offset
+
 import numpy as np
 import requests_cache
-import pandas as pd
-import datetime
-
 import yfinance as yf
-from cryptocmd import CmcScraper
 
 import src.utils as u
 from src.Filters.MST import MinimumSpanningTree
@@ -141,7 +137,6 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
     new_tickers=tickers
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
-    print(tickers_data)
     tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN value
 
     if min_sr:
