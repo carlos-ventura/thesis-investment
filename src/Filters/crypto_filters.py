@@ -10,23 +10,18 @@ MINIMUM_DAILY_VOLUME = 50000
 VOLUME_START_DATE = '2021-05-01'
 VOLUME_END_DATE = '2022-05-01'
 
-DATE_ARRAY = ['2021-05-01', '2020-05-01', '2019-05-01', '2018-05-01', '2017-05-01']
+DATE_ARRAY = ['2017-11-06', '2018-05-01', '2019-05-01', '2020-05-01', '2021-05-01']
 
 if __name__ == '__main__':
     start_time = time.time()
-
     # rates_filter(SOURCE_CRYPTO)
-
-    # date_filter(CRYPTO_FILTERED_RATES, VOLUME_START_DATE, 'crypto', 'date-vol-prep')
-    # volume_filter(CRYPTO_PREP_VOL, VOLUME_START_DATE, VOLUME_END_DATE, MINIMUM_DAILY_VOLUME, 'crypto')
-
     for date in DATE_ARRAY:
         target_name=date.split('-', maxsplit=1)[0]
-        # time.sleep(60)
-        # date_filter(CRYPTO_FILTERED_VOLUME, start_date=date, ticker_type='crypto', target_name=target_name)
-        mst_filter([f'../data/crypto-{target_name}-f.txt'], start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto')
-        # volume_filter(f'../data/crypto-{target_name}-f.txt', date, VOLUME_END_DATE, MINIMUM_DAILY_VOLUME, 'crypto')
-        print(f"Finished date filter for {date}")
-
+        filename = f'../data/crypto-{target_name}-f.txt'
+        date_filter(CRYPTO_FILTERED_RATES, start_date=date, ticker_type='crypto', target_name=target_name)
+        volume_filter(filename, date, VOLUME_END_DATE, MINIMUM_DAILY_VOLUME, 'crypto')
+        mst_filter([filename], start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto', min_sr=False)
+        mst_filter([filename], start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=0)
+        mst_filter([filename], start_date=date, end_date=VOLUME_END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=1)
 
     print(f"Filter took {time.time() - start_time}s to run")
