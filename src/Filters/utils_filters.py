@@ -3,10 +3,14 @@ import json
 import time
 from itertools import repeat
 import os
-
+from pandas.tseries.frequencies import to_offset
 import numpy as np
 import requests_cache
+import pandas as pd
+import datetime
+
 import yfinance as yf
+from cryptocmd import CmcScraper
 
 import src.utils as u
 from src.Filters.MST import MinimumSpanningTree
@@ -17,7 +21,7 @@ def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
         tickers = ticker_file.read().split('\n')
     start_date = np.datetime64(start_date)
     tickers_data = yf.download(tickers,start=start_date, end=start_date + np.timedelta64(7, 'D'))
-    print(tickers_data)
+    # print(tickers_data)
     new_tickers = [ticker for ticker in tickers if not tickers_data['Adj Close'][ticker].isnull().all()]
 
     with open(f'../data/{ticker_type}-{target_name}-f.txt', 'w', encoding='UTF-8') as txt_date_filtered:
@@ -130,13 +134,14 @@ def er_helper(chunk:list, maximum:float, session):
 
 def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ticker_type:str, min_sr=False, sr_value=0):
     tickers=[]
-    new_tickers=[]
     for filename in filenames:
         with open(filename, "r", encoding="UTF-8") as ticker_file:
             tickers.extend(ticker_file.read().split('\n'))
 
+    new_tickers=tickers
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
+    print(tickers_data)
     tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN value
 
     if min_sr:
@@ -151,9 +156,8 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
         new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
         print(len(new_tickers))
 
-    print(tickers_return)
-
     with open(f"../data/mst/{ticker_type}-{target_name}.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
     tickers_return.to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")
+
