@@ -134,7 +134,6 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
         with open(filename, "r", encoding="UTF-8") as ticker_file:
             tickers.extend(ticker_file.read().split('\n'))
 
-    new_tickers=tickers
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
     tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN value
@@ -142,8 +141,10 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
     tickers_return.drop(columns=tickers_return.columns.to_series()[np.isinf(tickers_return).any()], inplace=True)
     tickers_return.fillna(0, inplace=True)
 
+    new_tickers=tickers_return.columns
+
     if min_sr:
-        drop_list = [ticker for ticker in tickers if u.sharpe_ratio(tickers_return[ticker]) < sr_value]
+        drop_list = [ticker for ticker in new_tickers if u.sharpe_ratio(tickers_return[ticker]) < sr_value]
         tickers_return.drop(drop_list, axis=1, inplace=True)
         ticker_type += f'-sr{sr_value}'
         print(len(drop_list))
