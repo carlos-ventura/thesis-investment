@@ -1,0 +1,27 @@
+{
+    "2017": {
+        "joint_mst": 24,
+        "joint_mst_sr0": 20,
+        "joint_mst_sr1": 15
+    },
+    "2018": {
+        "joint_mst": 17,
+        "joint_mst_sr0": 28,
+        "joint_mst_sr1": 13
+    },
+    "2019": {
+        "joint_mst": 26,
+        "joint_mst_sr0": 28,
+        "joint_mst_sr1": 24
+    },
+    "2020": {
+        "joint_mst": 29,
+        "joint_mst_sr0": 26,
+        "joint_mst_sr1": 25
+    },
+    "2021": {
+        "joint_mst": 24,
+        "joint_mst_sr0": 16,
+        "joint_mst_sr1": 15
+    }
+}
