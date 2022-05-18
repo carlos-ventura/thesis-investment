@@ -22,6 +22,8 @@ def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
 
     with open(f'../data/{ticker_type}-{target_name}-f.txt', 'w', encoding='UTF-8') as txt_date_filtered:
         txt_date_filtered.write("\n".join(map(str, new_tickers)))
+    
+    return len(new_tickers)
 
 
 def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticker_type:str):
@@ -42,6 +44,8 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
 
     with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
+
+    return len(new_tickers)
 
 def volatility_filter(filename:str, start_date:str, end_date:str, maximum:int):
     tickers = []
@@ -64,6 +68,8 @@ def volatility_filter(filename:str, start_date:str, end_date:str, maximum:int):
 
     with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
+    
+    return len(new_tickers)
 
 def rates_filter(filename:str):
     tickers = []
@@ -79,6 +85,8 @@ def rates_filter(filename:str):
 
     with open('../data/crypto-rates-f.txt', 'w', encoding='UTF-8') as txt_rates_filtered:
         txt_rates_filtered.write("\n".join(map(str, new_tickers)))
+
+    return len(new_tickers)
 
 def expense_ratio_filter_yf(filename:str, maximum:float):
     session = requests_cache.CachedSession('yahoo_finance.cache')
@@ -186,4 +194,6 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
     tickers_returns[new_tickers].to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")
+
+    return len(new_tickers)
 

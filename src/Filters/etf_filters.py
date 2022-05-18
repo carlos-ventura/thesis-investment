@@ -1,3 +1,4 @@
+import json
 import time
 from src.Filters.utils_filters import volume_filter, expense_ratio_filter_yf, date_filter,mst_filter
 import src.constants as c
@@ -17,12 +18,17 @@ if __name__ == '__main__':
     for date in c.START_DATES:
         target_name=date.split('-', maxsplit=1)[0]
         filename = [f'../data/etf-{target_name}-f.txt']
-        date_filter(ETF_ER_FILTERED_TICKERS, start_date=date, ticker_type='etf', target_name=target_name)
-        volume_filter(filename[0], date, c.END_DATE, c.MINIMUM_DAILY_VOLUME, 'etf')
-        mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=False)
-        mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=0)
-        mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=1)
+        etf_date_len = date_filter(ETF_ER_FILTERED_TICKERS, start_date=date, ticker_type='etf', target_name=target_name)
+        etf_volume_len = volume_filter(filename[0], date, c.END_DATE, c.MINIMUM_DAILY_VOLUME, 'etf')
+        etf_mst_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=False)
+        etf_mst_sr0_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=0)
+        etf_mst_sr1_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=1)
 
         print(f"Finished date filter for {date}")
+        
+    len_dict = {'date': etf_date_len, 'volume': etf_volume_len,'mst': etf_mst_len, 'mst_sr0':etf_mst_sr0_len, 'mst_sr1': etf_mst_sr1_len}
+    
+    with open("../data/crypto_len.json", "w") as outfile:
+        json.dump(len_dict, outfile)
 
     print(f"Filters took {time.time() - start_time}s to run")
