@@ -25,8 +25,8 @@ if __name__ == '__main__':
         etf_mst_sr1_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=1)
 
         print(f"Finished date filter for {date}")
-        
-    len_dict = {'date': etf_date_len, 'volume': etf_volume_len,'mst': etf_mst_len, 'mst_sr0':etf_mst_sr0_len, 'mst_sr1': etf_mst_sr1_len}
+
+    len_dict = {'date': etf_date_len, 'volume': etf_volume_len, 'mst': etf_mst_len, 'mst_sr0':etf_mst_sr0_len, 'mst_sr1': etf_mst_sr1_len}
     
     with open("../data/crypto_len.json", "w") as outfile:
         json.dump(len_dict, outfile)
