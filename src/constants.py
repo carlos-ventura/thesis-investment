@@ -17,5 +17,6 @@ OPTIMIZER_MEASURES = ['min volatility', 'efficient return', 'efficient risk']
 
 MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
+MAXIMUM_ANNUAL_STD = 2
 
 DCA_MONTHLY = 0  # default

@@ -43,6 +43,28 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
     with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
 
+def volatility_filter(filename:str, start_date:str, end_date:str, maximum:int):
+    tickers = []
+    new_tickers = []
+    with open(filename, "r", encoding="UTF-8") as ticker_file:
+        tickers = ticker_file.read().split('\n')
+
+    tickers_data = yf.download(tickers, start=start_date, end=end_date, interval='1wk')['Adj Close']
+    tickers_data.dropna(how='all', inplace=True)
+    tickers_returns = tickers_data.pct_change()
+    
+    train_data, _ = train_test_split(tickers_returns, train_size=0.5, shuffle=False)
+
+    for ticker in tickers:
+        std = train_data[ticker].std()
+        annual_std = u.convert_to_annual(std, 'w', std=True, crypto=True)
+        print(annual_std)
+        if annual_std <= maximum:
+            new_tickers.append(ticker)
+
+    with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
+        txt_volume_filtered.write("\n".join(map(str, new_tickers)))
+
 def rates_filter(filename:str):
     tickers = []
     rates_dict = {}

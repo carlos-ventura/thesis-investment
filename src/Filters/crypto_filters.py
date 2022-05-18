@@ -1,5 +1,5 @@
 import time
-from src.Filters.utils_filters import volume_filter, expense_ratio_filter_yf, date_filter,mst_filter
+from src.Filters.utils_filters import volatility_filter, volume_filter, expense_ratio_filter_yf, date_filter,mst_filter
 
 import src.constants as c
 
@@ -16,6 +16,7 @@ if __name__ == '__main__':
         filename = [f'../data/crypto-{target_name}-f.txt']
         date_filter(CRYPTO_FILTERED_RATES, start_date=date, ticker_type='crypto', target_name=target_name)
         volume_filter(filename[0], date, c.END_DATE, c.MINIMUM_DAILY_VOLUME, 'crypto')
+        volatility_filter(filename[0], date, c.END_DATE, c.MAXIMUM_ANNUAL_STD)
         mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='crypto', min_sr=False)
         mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=0)
         mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=1)
