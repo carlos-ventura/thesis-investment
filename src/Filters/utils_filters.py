@@ -6,6 +6,7 @@ import os
 
 import numpy as np
 import requests_cache
+from sklearn.model_selection import train_test_split
 import yfinance as yf
 
 import src.utils as u
@@ -17,7 +18,6 @@ def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
         tickers = ticker_file.read().split('\n')
     start_date = np.datetime64(start_date)
     tickers_data = yf.download(tickers,start=start_date, end=start_date + np.timedelta64(7, 'D'))
-    # print(tickers_data)
     new_tickers = [ticker for ticker in tickers if not tickers_data['Adj Close'][ticker].isnull().all()]
 
     with open(f'../data/{ticker_type}-{target_name}-f.txt', 'w', encoding='UTF-8') as txt_date_filtered:
@@ -32,11 +32,13 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
 
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval='1d')
     tickers_data.dropna(how='all', inplace=True)
-    print(tickers_data)
+    
+    train_data, _ = train_test_split(tickers_data, train_size=0.5, shuffle=False)
+
     if ticker_type == 'etf':
-        new_tickers = [ticker for ticker in tickers if tickers_data['Volume'][ticker].mean() >= minimum]
+        new_tickers = [ticker for ticker in tickers if (train_data['Volume'][ticker] * train_data['Adj Close'][ticker]).mean() >= minimum]
     else:
-        new_tickers = [ticker for ticker in tickers if (tickers_data['Volume'][ticker] / tickers_data['Close'][ticker]).mean() >= minimum]
+        new_tickers = [ticker for ticker in tickers if train_data['Volume'][ticker].mean() >= minimum]
 
     with open(filename, 'w', encoding='UTF-8') as txt_volume_filtered:
         txt_volume_filtered.write("\n".join(map(str, new_tickers)))
@@ -136,27 +138,30 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
 
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
-    tickers_return = tickers_data.pct_change()[1:] # Remove first row of NaN value
+    tickers_returns = tickers_data.pct_change()[1:] # Remove first row of NaN value
 
-    tickers_return.drop(columns=tickers_return.columns.to_series()[np.isinf(tickers_return).any()], inplace=True)
-    tickers_return.fillna(0, inplace=True)
+    tickers_returns.drop(columns=tickers_returns.columns.to_series()[np.isinf(tickers_returns).any()], inplace=True)
+    tickers_returns.fillna(0, inplace=True)
 
-    new_tickers=tickers_return.columns
+    new_tickers=tickers_returns.columns
+
+    train_returns, _  = train_test_split(tickers_returns, train_size=0.5, shuffle=False)
 
     if min_sr:
-        drop_list = [ticker for ticker in new_tickers if u.sharpe_ratio(tickers_return[ticker]) < sr_value]
-        tickers_return.drop(drop_list, axis=1, inplace=True)
+        drop_list = [ticker for ticker in new_tickers if u.sharpe_ratio(train_returns[ticker]) < sr_value]
+        train_returns.drop(drop_list, axis=1, inplace=True)
         ticker_type += f'-sr{sr_value}'
         print(len(drop_list))
         new_tickers = list(set(tickers) - set(drop_list))
 
-    while tickers_return.shape[1] > 30:
+    while train_returns.shape[1] > 30:
         print('Applying mst...')
-        new_tickers,tickers_return,_,_ = MinimumSpanningTree(tickers_return)
+        new_tickers,train_returns,_,_ = MinimumSpanningTree(train_returns)
         print(len(new_tickers))
+
 
     with open(f"../data/mst/{ticker_type}-{target_name}.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
 
-    tickers_return.to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")
+    tickers_returns[new_tickers].to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")
 
