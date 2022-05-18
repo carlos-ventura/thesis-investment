@@ -62,7 +62,6 @@ def volatility_filter(filename:str, start_date:str, end_date:str, maximum:int):
     for ticker in tickers:
         std = train_data[ticker].std()
         annual_std = u.convert_to_annual(std, 'w', std=True, crypto=True)
-        print(annual_std)
         if annual_std <= maximum:
             new_tickers.append(ticker)
 
@@ -181,7 +180,6 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
         drop_list = [ticker for ticker in new_tickers if u.sharpe_ratio(train_returns[ticker]) < sr_value]
         train_returns.drop(drop_list, axis=1, inplace=True)
         ticker_type += f'-sr{sr_value}'
-        print(len(drop_list))
         new_tickers = list(set(tickers) - set(drop_list))
 
     while train_returns.shape[1] > 30:
