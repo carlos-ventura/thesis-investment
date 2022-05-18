@@ -12,6 +12,7 @@ CRYPTO_PREP_VOL = '../data/crypto-date-vol-prep-f.txt'
 if __name__ == '__main__':
     start_time = time.time()
     # rates_filter(SOURCE_CRYPTO)
+    len_dict = {}
     for date in c.START_DATES:
         target_name=date.split('-', maxsplit=1)[0]
         filename = [f'../data/crypto-{target_name}-f.txt']
@@ -22,10 +23,11 @@ if __name__ == '__main__':
         crypto_mst_sr0_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=0)
         crypto_mst_sr1_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='crypto', min_sr=True, sr_value=1)
     
-    len_dict = {'date': crypto_date_len, 'volume': crypto_volume_len, 'volatility': crypto_volatility_filter,
-    'mst': crypto_mst_len, 'mst_sr0':crypto_mst_sr0_len, 'mst_sr1': crypto_mst_sr1_len}
-    
+        len_dict_date = {'date': crypto_date_len, 'volume': crypto_volume_len, 'volatility': crypto_volatility_filter,
+        'mst': crypto_mst_len, 'mst_sr0':crypto_mst_sr0_len, 'mst_sr1': crypto_mst_sr1_len}
+        len_dict[target_name] = len_dict_date
+
     with open("../data/crypto_len.json", "w") as outfile:
-        json.dump(len_dict, outfile)
+        json.dump(len_dict, outfile, indent=4)
 
     print(f"Filter took {time.time() - start_time}s to run")

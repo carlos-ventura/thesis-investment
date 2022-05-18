@@ -14,6 +14,7 @@ if __name__ == '__main__':
     # date_filter(ETF_FILENAME, c.START_DATES[-1], 'etf', 'date-vol-prep')
     # while True:
         # expense_ratio_filter_yf(ETF_PREP_VOL, c.MAXIMUM_EXPENSE_RATIO)
+    len_dict = {}
 
     for date in c.START_DATES:
         target_name=date.split('-', maxsplit=1)[0]
@@ -24,11 +25,10 @@ if __name__ == '__main__':
         etf_mst_sr0_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=0)
         etf_mst_sr1_len = mst_filter(filename, start_date=date, end_date=c.END_DATE, target_name=target_name, ticker_type='etf', min_sr=True, sr_value=1)
 
-        print(f"Finished date filter for {date}")
-
-    len_dict = {'date': etf_date_len, 'volume': etf_volume_len, 'mst': etf_mst_len, 'mst_sr0':etf_mst_sr0_len, 'mst_sr1': etf_mst_sr1_len}
+        len_dict_date = {'date': etf_date_len, 'volume': etf_volume_len, 'mst': etf_mst_len, 'mst_sr0':etf_mst_sr0_len, 'mst_sr1': etf_mst_sr1_len}
+        len_dict[target_name] = len_dict_date
     
-    with open("../data/crypto_len.json", "w") as outfile:
-        json.dump(len_dict, outfile)
+    with open("../data/etf_len.json", "w") as outfile:
+        json.dump(len_dict, outfile, indent=4)
 
     print(f"Filters took {time.time() - start_time}s to run")
