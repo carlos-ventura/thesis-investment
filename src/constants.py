@@ -15,10 +15,7 @@ MST_TYPES = ['separate', 'joint']
 
 OPTIMIZER_MEASURES = ['min volatility', 'efficient return', 'efficient risk']
 
-MINIMUM_DAILY_VOLUME = 50000
+MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
-
-START_TEST_DATE = 0  #TODO
-END_TEST_DATE = 0  #TODO
 
 DCA_MONTHLY = 0  # default
