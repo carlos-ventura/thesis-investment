@@ -137,8 +137,5 @@ venv-thesis
 # Pylint
 .pylintrc
 
-# New yfinance module
-yfinance
-
-# Test file for filters
-Filters/test.py
+# Test files
+test.py
