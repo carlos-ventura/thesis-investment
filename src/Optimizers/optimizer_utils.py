@@ -1,7 +1,7 @@
 import pandas as pd
 from pypfopt import expected_returns, objective_functions, risk_models, plotting
 from pypfopt.efficient_frontier import EfficientFrontier
-from sklearn.model_selection import train_test_split
+import plotly.graph_objects as go
 
 import src.constants as c
 
@@ -66,7 +66,29 @@ def generate_efficient_frontiers_graph(returns:pd.DataFrame):
     returns_crypto = returns[crypto]
     returns_etf = returns[etf]
 
-def genereate_ef(returns:pd.DataFrame, l2_reg = False, l2_value = 0.1):
+    ef_crypto = genereate_ef(returns_crypto, sector=False, l2_reg=True)
+    ef_etf = genereate_ef(returns_etf, sector=False, l2_reg=True)
+    ef_combined = genereate_ef(returns, sector=False, l2_reg=True)
+
+    _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
+    _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
+    _, mus_combined , sigmas_combined, _ = plotting.plot_efficient_frontier(ef_combined, ef_param='return', show_assets=False)
+
+    f1 = go.Figure(
+    data = [
+        go.Scatter(x=sigmas_crypto,y=mus_crypto, name='Efficient Frontier Crypto'),
+        go.Scatter(x=sigmas_etf, y=mus_etf, name="Efficient Frontier ETF"),
+        go.Scatter(x=sigmas_combined, y=mus_combined, name='Efficient Frontier Crypto + ETF'),
+        go.Scatter(x=assets_crypto['sigmas'], y = assets_crypto['mus'], name='Cryptos', mode='markers'),
+        go.Scatter(x=assets_etf['sigmas'], y = assets_etf['mus'], name='ETFs', mode='markers'),
+    ],
+    layout = go.Layout(
+    title="Comparison of Efficient Frontiers",
+    xaxis=dict(title="Volatility"),
+    yaxis=dict(title="Return"))
+    )   
+    f1.show()
+
     mu = expected_returns.mean_historical_return(returns, returns_data=True ,compounding=True, frequency=52)
     S = risk_models.sample_cov(returns, returns_data=True, frequency=52)
 
