@@ -3,6 +3,7 @@ Constants to generate different results with different models
 """
 
 WORLD_ETF_TICKERS = ["VWCE.DE", "MSCI", "ACWI"]
+BENCHMARK_RISK = 0.15
 
 ETF_WEIGHT = 0.95
 CRYPTO_WEIGHT = 1 - ETF_WEIGHT
@@ -13,7 +14,7 @@ END_DATE = '2022-05-01'
 MST_MODES = ['', 'sr0', 'sr1']
 MST_TYPES = ['separate', 'joint']
 
-OPTIMIZER_MEASURES = ['min volatility', 'efficient return', 'efficient risk']
+OPTIMIZER_MEASURES = ['efficient risk'] # efficient risk, efficient return, max sharpe, min volatility
 
 MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
