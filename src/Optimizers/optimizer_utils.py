@@ -17,13 +17,11 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str):
 
     return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
 
-def optimize_variance(returns, max_return:float, min_risk:float, l2_reg = False):
-
-    train, test = train_test_split(returns, test_size=0.5, train_size=0.5, shuffle=False)
+def optimize_variance(returns, train, test, max_return:float, min_risk:float, l2_reg = False):
 
     for opt_mes in c.OPTIMIZER_MEASURES:
 
-        ef = genereate_ef(returns, l2_reg=True)
+        ef = generate_ef(train, sector=True, l2_reg=True)
         weights = optimizer_measures_weights(ef, opt_mes, max_return, min_risk)
         cleaned_weights = ef.clean_weights()
 
@@ -66,9 +64,9 @@ def generate_efficient_frontiers_graph(returns:pd.DataFrame):
     returns_crypto = returns[crypto]
     returns_etf = returns[etf]
 
-    ef_crypto = genereate_ef(returns_crypto, sector=False, l2_reg=True)
-    ef_etf = genereate_ef(returns_etf, sector=False, l2_reg=True)
-    ef_combined = genereate_ef(returns, sector=False, l2_reg=True)
+    ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=True)
+    ef_etf = generate_ef(returns_etf, sector=False, l2_reg=True)
+    ef_combined = generate_ef(returns, sector=False, l2_reg=True)
 
     _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
     _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
@@ -89,16 +87,17 @@ def generate_efficient_frontiers_graph(returns:pd.DataFrame):
     )   
     f1.show()
 
+def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, l2_value = 0.1, verbose=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True ,compounding=True, frequency=52)
     S = risk_models.sample_cov(returns, returns_data=True, frequency=52)
 
-    ef = EfficientFrontier(mu, S)
+    ef = EfficientFrontier(mu, S, verbose=verbose, solver="SCS")
 
-    sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
-    sector_lower = {'etf': c.ETF_WEIGHT}  
-    sector_upper = {'crypto': c.CRYPTO_WEIGHT }
-
-    ef.add_sector_constraints(sector_mapper=sector_mapper, sector_upper=sector_upper, sector_lower=sector_lower)
+    if sector:
+        sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
+        sector_lower = {'etf': c.ETF_WEIGHT}  
+        sector_upper = {'crypto': c.CRYPTO_WEIGHT }
+        ef.add_sector_constraints(sector_mapper=sector_mapper, sector_upper=sector_upper, sector_lower=sector_lower)
 
     if l2_reg:
         ef.add_objective(objective_functions.L2_reg, gamma=l2_value) # Reduce 0% weights
