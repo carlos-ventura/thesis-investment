@@ -1,7 +1,14 @@
+from sqlite3 import DatabaseError
+from matplotlib import pyplot as plt
+import numpy as np
 import pandas as pd
 from pypfopt import expected_returns, objective_functions, risk_models, plotting
+import pypfopt
 from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
+import plotly_express as px
+from pandas.testing import assert_frame_equal
 
 import src.constants as c
 
@@ -51,7 +58,7 @@ def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 
     if opt_mes == 'efficient risk':
         return ef.efficient_risk(min_risk)
 
-def generate_efficient_frontiers_graph(returns:pd.DataFrame):
+def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str):
     asset_names = returns.columns.values
     crypto = []
     etf = []
@@ -66,7 +73,7 @@ def generate_efficient_frontiers_graph(returns:pd.DataFrame):
 
     ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=True)
     ef_etf = generate_ef(returns_etf, sector=False, l2_reg=True)
-    ef_combined = generate_ef(returns, sector=False, l2_reg=True)
+    ef_combined = generate_ef(returns, sector=True, l2_reg=True)
 
     _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
     _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
@@ -81,11 +88,15 @@ def generate_efficient_frontiers_graph(returns:pd.DataFrame):
         go.Scatter(x=assets_etf['sigmas'], y = assets_etf['mus'], name='ETFs', mode='markers'),
     ],
     layout = go.Layout(
-    title="Comparison of Efficient Frontiers",
+    title=f"Comparison of Efficient Frontiers {title}",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return"))
     )   
     f1.show()
+
+def print_correlation_heatmap(returns:pd.DataFrame, title:str):
+    fig = px.imshow(returns.corr(), title=f"Heatmap Correlation : {title}")
+    fig.show()
 
 def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, l2_value = 0.1, verbose=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True ,compounding=True, frequency=52)
