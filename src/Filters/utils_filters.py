@@ -11,6 +11,7 @@ import yfinance as yf
 
 import src.utils as u
 from src.Filters.MST import MinimumSpanningTree
+import src.constants as c
 
 def date_filter(filename:str, start_date:str, ticker_type:str, target_name:str):
     tickers = []
@@ -159,11 +160,14 @@ def er_helper(chunk:list, maximum:float, session):
         above_tickers.append(ticker.ticker)
     return {'new_tickers': new_tickers, 'none_tickers': none_tickers, 'above_tickers': above_tickers}
 
-def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ticker_type:str, min_sr=False, sr_value=0):
+def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ticker_type:str, min_sr=False, sr_value=0, benchmark=False):
     tickers=[]
-    for filename in filenames:
-        with open(filename, "r", encoding="UTF-8") as ticker_file:
-            tickers.extend(ticker_file.read().split('\n'))
+    if benchmark:
+        tickers = c.WORLD_ETF_TICKERS
+    else:
+        for filename in filenames:
+            with open(filename, "r", encoding="UTF-8") as ticker_file:
+                tickers.extend(ticker_file.read().split('\n'))
 
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval="1wk")["Adj Close"]
     tickers_data.dropna(how='all', inplace=True)
@@ -190,6 +194,8 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
 
     with open(f"../data/mst/{ticker_type}-{target_name}.txt", 'w', encoding='UTF-8') as txt_mst_filtered:
         txt_mst_filtered.write("\n".join(map(str, new_tickers)))
+    
+    print(tickers_returns[new_tickers])
 
     tickers_returns[new_tickers].to_pickle(f"../data/mst/pickle/{ticker_type}-{target_name}.pkl")
 
