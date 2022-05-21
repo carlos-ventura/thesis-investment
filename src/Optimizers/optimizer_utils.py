@@ -1,4 +1,5 @@
 from sqlite3 import DatabaseError
+from statistics import mean
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
@@ -9,8 +10,10 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 import plotly_express as px
 from pandas.testing import assert_frame_equal
+from sklearn.model_selection import train_test_split
 
 import src.constants as c
+from src.utils import annualized_return, annualized_std
 
 def load_mst_data(date:str, mst_type:str, mst_mode:str):
     year = date.split('-', maxsplit=1)[0]
@@ -25,10 +28,8 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str):
     return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
 
 def optimize_variance(returns, train, test, max_return:float, min_risk:float, l2_reg = False):
-
     for opt_mes in c.OPTIMIZER_MEASURES:
-
-        ef = generate_ef(train, sector=True, l2_reg=True)
+        ef = generate_ef(train, sector=True, l2_reg=l2_reg)
         weights = optimizer_measures_weights(ef, opt_mes, max_return, min_risk)
         cleaned_weights = ef.clean_weights()
 
@@ -37,9 +38,6 @@ def optimize_variance(returns, train, test, max_return:float, min_risk:float, l2
 
         print_performance_title(opt_mes)
         ef.portfolio_performance(verbose=True)
-
-        # Show weights to 0 how many show only normal weights #TODO
-    # exit()
 
 def optimize_semivariance(returns):
     pass
@@ -115,5 +113,25 @@ def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, l2_val
 
     return ef
 
+def load_benchmark(date):
+    year = date.split('-', maxsplit=1)[0]
+    path = f'../data/mst/pickle/etfs-benchmark-{year}.pkl'
+    return pd.read_pickle(path)
+
+def benchmark_stats(returns):
+    train, test = train_test_split(returns, test_size=0.5, train_size=0.5, shuffle=False)
+    return_train, return_test, std_train, std_test, return_all, std_all = [], [], [], [], [], []
+    for bench in c.WORLD_ETF_TICKERS:
+        return_train.append(annualized_return(train[bench]))
+        return_test.append(annualized_return(test[bench]))
+        std_train.append(annualized_std(train[bench]))
+        std_test.append(annualized_std(test[bench]))
+        return_all.append(annualized_return(returns[bench]))
+        std_all.append(annualized_std(returns[bench]))
+
+    return {'all': {'return': round(mean(return_all), 3), 'std': round(mean(std_all), 3)},
+        'train': {'return': round(mean(return_train), 3), 'std': round(mean(std_train), 3)},
+     'test': {'return': round(mean(return_test), 3), 'std': round(mean(std_test), 3)}
+}
 
 
