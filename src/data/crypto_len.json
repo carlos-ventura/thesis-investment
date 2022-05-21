@@ -7,14 +7,6 @@
         "mst_sr0": 10,
         "mst_sr1": 2
     },
-    "2018": {
-        "date": 119,
-        "volume": 82,
-        "volatility": 80,
-        "mst": 26,
-        "mst_sr0": 6,
-        "mst_sr1": 1
-    },
     "2019": {
         "date": 173,
         "volume": 113,
@@ -22,21 +14,5 @@
         "mst": 16,
         "mst_sr0": 24,
         "mst_sr1": 8
-    },
-    "2020": {
-        "date": 230,
-        "volume": 184,
-        "volatility": 129,
-        "mst": 17,
-        "mst_sr0": 15,
-        "mst_sr1": 29
-    },
-    "2021": {
-        "date": 431,
-        "volume": 334,
-        "volatility": 268,
-        "mst": 27,
-        "mst_sr0": 19,
-        "mst_sr1": 24
     }
 }
