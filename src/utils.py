@@ -82,12 +82,16 @@ def print_stats(ticker, ticker_dict, crypto):
                 \nannual return: {ticker_dict['passive'][mode]['annual_return'] * 100} %")
 
 def sharpe_ratio(returns, risk_free=0):
-    weekly_geomean= gmean(1 + returns.to_numpy()[1:]) - 1
-    annual_geomean= convert_to_annual(weekly_geomean, 'w')
-    weekly_std = np.std(returns.to_numpy()[1:])
-    annual_std = convert_to_annual(weekly_std, 'w', std=True)
-
+    annual_geomean = annualized_return(returns)
+    annual_std = annualized_std(returns)
     return (annual_geomean - risk_free)/ annual_std
 
-def new_function():
-    pass
+def annualized_return(returns):
+    returns.dropna(how='all', inplace=True)
+    weekly_geomean= gmean(1 + returns.to_numpy()) - 1
+    return convert_to_annual(weekly_geomean, 'w')
+
+def annualized_std(returns):
+    returns.dropna(how='all', inplace=True)
+    weekly_std = np.std(returns.to_numpy())
+    return convert_to_annual(weekly_std, 'w', std=True)
