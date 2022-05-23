@@ -1,16 +1,17 @@
-from sqlite3 import DatabaseError
+import json
 from statistics import mean
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-from pypfopt import expected_returns, objective_functions, risk_models, plotting
-import pypfopt
+from pypfopt import EfficientSemivariance, expected_returns, objective_functions, risk_models, plotting, HRPOpt
 from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
 import plotly_express as px
 from pandas.testing import assert_frame_equal
 from sklearn.model_selection import train_test_split
+import collections
+import empyrical as ep
 
 import src.constants as c
 from src.utils import annualized_return, annualized_std
@@ -46,7 +47,7 @@ def print_performance_title(title:str):
     print('\n---------- OPTIMIZER ----------')
     print(f'---------- {title.upper()} ----------\n')
 
-def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 0, min_risk = 0):
+def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 0, min_risk = c.BENCHMARK_RISK):
     if opt_mes == 'max sharpe':
         return ef.max_sharpe()
     if opt_mes == 'min volatility':
@@ -119,19 +120,27 @@ def load_benchmark(date):
     return pd.read_pickle(path)
 
 def benchmark_stats(returns):
-    train, test = train_test_split(returns, test_size=0.5, train_size=0.5, shuffle=False)
+    train, test = train_test_split(returns, train_size=0.3, shuffle=False)
+    individual = {}
     return_train, return_test, std_train, std_test, return_all, std_all = [], [], [], [], [], []
     for bench in c.WORLD_ETF_TICKERS:
-        return_train.append(annualized_return(train[bench]))
-        return_test.append(annualized_return(test[bench]))
-        std_train.append(annualized_std(train[bench]))
-        std_test.append(annualized_std(test[bench]))
-        return_all.append(annualized_return(returns[bench]))
-        std_all.append(annualized_std(returns[bench]))
+        ret_train = annualized_return(train[bench])
+        ret_test = annualized_return(test[bench])
+        vol_train = annualized_std(train[bench])
+        vol_test = annualized_std(test[bench])
+        individual[bench] = {"train": {"return": round(ret_train, 3), "std": round(vol_train, 3)},
+         "test": {"return": round(ret_test, 3), "std": round(vol_test, 3)}}
+        return_train.append(ret_train)
+        return_test.append(ret_test)
+        std_train.append(vol_train)
+        std_test.append(vol_test)
+    average = {'train': {'return': round(mean(return_train), 3), 'std': round(mean(std_train), 3)},'test': {'return': round(mean(return_test), 3), 'std': round(mean(std_test), 3)}}
 
-    return {'all': {'return': round(mean(return_all), 3), 'std': round(mean(std_all), 3)},
-        'train': {'return': round(mean(return_train), 3), 'std': round(mean(std_train), 3)},
-     'test': {'return': round(mean(return_test), 3), 'std': round(mean(std_test), 3)}
-}
+    return {"individual": individual, "average": average}
+
+
+def write_json(dict:dict, name:str):
+    with open(f"../data/{name}", "w") as outfile:
+        json.dump(dict, outfile, indent=4)
 
 
