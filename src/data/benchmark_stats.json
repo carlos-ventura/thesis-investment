@@ -1,33 +1,93 @@
 {
     "2017-11-06": {
         "benchmark": {
-            "all": {
-                "return": 0.095,
-                "std": 0.165
+            "individual": {
+                "IWDA.AS": {
+                    "train": {
+                        "return": 0.052,
+                        "std": 0.139
+                    },
+                    "test": {
+                        "return": 0.152,
+                        "std": 0.176
+                    }
+                },
+                "ACWI": {
+                    "train": {
+                        "return": 0.018,
+                        "std": 0.155
+                    },
+                    "test": {
+                        "return": 0.11,
+                        "std": 0.203
+                    }
+                },
+                "VWCE.DE": {
+                    "train": {
+                        "return": 0.0,
+                        "std": 0.0
+                    },
+                    "test": {
+                        "return": 0.12,
+                        "std": 0.166
+                    }
+                }
             },
-            "train": {
-                "return": 0.076,
-                "std": 0.105
-            },
-            "test": {
-                "return": 0.115,
-                "std": 0.206
+            "average": {
+                "train": {
+                    "return": 0.023,
+                    "std": 0.098
+                },
+                "test": {
+                    "return": 0.127,
+                    "std": 0.182
+                }
             }
         }
     },
     "2019-05-01": {
         "benchmark": {
-            "all": {
-                "return": 0.117,
-                "std": 0.186
+            "individual": {
+                "IWDA.AS": {
+                    "train": {
+                        "return": -0.192,
+                        "std": 0.235
+                    },
+                    "test": {
+                        "return": 0.307,
+                        "std": 0.146
+                    }
+                },
+                "ACWI": {
+                    "train": {
+                        "return": -0.268,
+                        "std": 0.237
+                    },
+                    "test": {
+                        "return": 0.291,
+                        "std": 0.188
+                    }
+                },
+                "VWCE.DE": {
+                    "train": {
+                        "return": -0.185,
+                        "std": 0.218
+                    },
+                    "test": {
+                        "return": 0.289,
+                        "std": 0.142
+                    }
+                }
             },
-            "train": {
-                "return": 0.038,
-                "std": 0.23
-            },
-            "test": {
-                "return": 0.204,
-                "std": 0.126
+            "average": {
+                "train": {
+                    "return": -0.215,
+                    "std": 0.23
+                },
+                "test": {
+                    "return": 0.295,
+                    "std": 0.159
+                }
             }
         }
     }
