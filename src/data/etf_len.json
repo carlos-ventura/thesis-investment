@@ -1,16 +1,16 @@
 {
     "2017": {
-        "date": 5117,
-        "volume": 1161,
-        "mst": 17,
-        "mst_sr0": 22,
-        "mst_sr1": 18
+        "date": 5121,
+        "volume": 1121,
+        "mst": 24,
+        "mst_sr0": 29,
+        "mst_sr1": 20
     },
     "2019": {
-        "date": 6649,
-        "volume": 1345,
-        "mst": 25,
-        "mst_sr0": 14,
-        "mst_sr1": 23
+        "date": 6677,
+        "volume": 1319,
+        "mst": 21,
+        "mst_sr0": 15,
+        "mst_sr1": 16
     }
 }
