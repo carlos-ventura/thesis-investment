@@ -36,7 +36,7 @@ def volume_filter(filename:str, start_date:str, end_date:str, minimum:int, ticke
     tickers_data = yf.download(tickers, start=start_date, end=end_date, interval='1d')
     tickers_data.dropna(how='all', inplace=True)
     
-    train_data, _ = train_test_split(tickers_data, train_size=0.5, shuffle=False)
+    train_data, _ = train_test_split(tickers_data, train_size=0.3, shuffle=False)
 
     if ticker_type == 'etf':
         new_tickers = [ticker for ticker in tickers if (train_data['Volume'][ticker] * train_data['Adj Close'][ticker]).mean() >= minimum]
@@ -58,7 +58,7 @@ def volatility_filter(filename:str, start_date:str, end_date:str, maximum:int):
     tickers_data.dropna(how='all', inplace=True)
     tickers_returns = tickers_data.pct_change()
     
-    train_data, _ = train_test_split(tickers_returns, train_size=0.5, shuffle=False)
+    train_data, _ = train_test_split(tickers_returns, train_size=0.3, shuffle=False)
 
     for ticker in tickers:
         std = train_data[ticker].std()
@@ -178,7 +178,7 @@ def mst_filter(filenames:list, start_date:str, end_date:str, target_name:str, ti
 
     new_tickers=tickers_returns.columns
 
-    train_returns, _  = train_test_split(tickers_returns, train_size=0.5, shuffle=False)
+    train_returns, _  = train_test_split(tickers_returns, train_size=0.3, shuffle=False)
 
     if min_sr:
         drop_list = [ticker for ticker in new_tickers if u.sharpe_ratio(train_returns[ticker]) < sr_value]
