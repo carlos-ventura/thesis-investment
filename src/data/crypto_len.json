@@ -2,17 +2,17 @@
     "2017": {
         "date": 82,
         "volume": 62,
-        "volatility": 50,
-        "mst": 28,
-        "mst_sr0": 10,
-        "mst_sr1": 2
+        "volatility": 42,
+        "mst": 24,
+        "mst_sr0": 6,
+        "mst_sr1": 1
     },
     "2019": {
         "date": 173,
-        "volume": 113,
-        "volatility": 109,
-        "mst": 16,
-        "mst_sr0": 24,
-        "mst_sr1": 8
+        "volume": 103,
+        "volatility": 99,
+        "mst": 25,
+        "mst_sr0": 7,
+        "mst_sr1": 3
     }
 }
