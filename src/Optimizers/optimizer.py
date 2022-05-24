@@ -25,7 +25,7 @@ def etf_benchmark():
         DICT_BENCHMARK_STATS[date]['benchmark'] = stats_benchmark_dict
     write_json(DICT_BENCHMARK_STATS, "benchmark_stats.json")
 
-def etf_mst_optimizer():
+def etf_mst_optimizer(semivariance:bool = False):
     sector=False
     rebalance=True
     for date in c.START_DATES:
@@ -49,7 +49,8 @@ def etf_mst_optimizer():
                     min_weights=bools[1],
                     sector=sector,
                     rebalance=rebalance,
-                    rebalance_weeks=52
+                    rebalance_weeks=52,
+                    semivariance=semivariance
                     )
 
                 DICT_ETF_MST[date][mst_mode_print].append({i: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
@@ -76,4 +77,4 @@ def etf_mst_crypto_mst_apy_optimizer():
     pass
 
 if __name__ == '__main__':
-    etf_mst_optimizer()
+    etf_mst_optimizer(semivariance=True)

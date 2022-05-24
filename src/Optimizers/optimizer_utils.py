@@ -31,12 +31,12 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
         return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
 
 
-def optimize_variance(returns, train, test, l2_reg=False, min_weights=False, sector=False, rebalance=False, rebalance_weeks=52):
+def optimize_variance(returns, train, test, l2_reg=False, min_weights=False, sector=False, rebalance=False, rebalance_weeks=52, semivariance=False):
     in_sample_dict = collections.defaultdict(dict)
     out_sample_dict = collections.defaultdict(dict)
     for opt_mes in c.OPTIMIZER_MEASURES:
         if not rebalance:
-            ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights)
+            ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
             weights = optimizer_measures_weights(ef_train, opt_mes)
             cleaned_weights = ef_train.clean_weights()
             non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
@@ -60,7 +60,7 @@ def optimize_variance(returns, train, test, l2_reg=False, min_weights=False, sec
             mu_test = 0
             rebalanced_port = pd.DataFrame()
             for count in chunks(test.shape[0], rebalance_weeks):
-                ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights)
+                ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
                 weights = optimizer_measures_weights(ef_train, opt_mes)
                 cleaned_weights = ef_train.clean_weights()
                 non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
@@ -140,7 +140,7 @@ def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, min_we
     
     if semivariance:
         S = risk_models.semicovariance(returns, returns_data=True, frequency=52)
-        ef = EfficientSemivariance(mu, returns, verbose=verbose, solver="SCS", frequency=52)
+        ef = EfficientSemivariance(mu, returns, verbose=verbose, solver="SCS", frequency=52, solver_options={"max_iters": 9999999})
     else:
         S = risk_models.sample_cov(returns, returns_data=True, frequency=52)
         ef = EfficientFrontier(mu, S, verbose=verbose, solver="SCS", solver_options={"max_iters": 999999})
