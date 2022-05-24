@@ -3,6 +3,8 @@
         "No sr": [
             {
                 "0": {
+                    "nr_weights": 1,
+                    "nr_0_weights": 23,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -22,6 +24,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 24,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -41,6 +45,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 8,
+                    "nr_0_weights": 16,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -60,6 +66,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 24,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
@@ -81,6 +89,8 @@
         "sr0": [
             {
                 "0": {
+                    "nr_weights": 1,
+                    "nr_0_weights": 28,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -100,6 +110,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 29,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -119,6 +131,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 9,
+                    "nr_0_weights": 20,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -138,6 +152,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 29,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
@@ -159,6 +175,8 @@
         "sr1": [
             {
                 "0": {
+                    "nr_weights": 1,
+                    "nr_0_weights": 19,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -178,6 +196,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 20,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -197,6 +217,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 6,
+                    "nr_0_weights": 14,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -216,6 +238,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 20,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
@@ -239,6 +263,8 @@
         "No sr": [
             {
                 "0": {
+                    "nr_weights": 4,
+                    "nr_0_weights": 17,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -258,6 +284,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 21,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -277,6 +305,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 6,
+                    "nr_0_weights": 15,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -296,6 +326,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 21,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
@@ -317,6 +349,8 @@
         "sr0": [
             {
                 "0": {
+                    "nr_weights": 3,
+                    "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -336,6 +370,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 15,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -355,6 +391,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 4,
+                    "nr_0_weights": 11,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -374,6 +412,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 15,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
@@ -395,6 +435,8 @@
         "sr1": [
             {
                 "0": {
+                    "nr_weights": 4,
+                    "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {
@@ -414,6 +456,8 @@
             },
             {
                 "1": {
+                    "nr_weights": 16,
+                    "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
                     "train": {
@@ -433,6 +477,8 @@
             },
             {
                 "2": {
+                    "nr_weights": 6,
+                    "nr_0_weights": 10,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {
@@ -452,6 +498,8 @@
             },
             {
                 "3": {
+                    "nr_weights": 16,
+                    "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
                     "train": {
