@@ -3,7 +3,7 @@ import itertools
 import json
 
 from sklearn.model_selection import train_test_split
-from src.Optimizers.optimizer_utils import benchmark_stats, load_benchmark, print_correlation_heatmap,print_efficient_frontiers_graph, load_mst_data, optimize_variance, optimize_semivariance, write_json
+from src.Optimizers.optimizer_utils import benchmark_stats, load_benchmark, print_correlation_heatmap,print_efficient_frontiers_graph, load_mst_data, optimize, optimize_semivariance, write_json
 
 import src.constants as c
 
@@ -41,7 +41,7 @@ def etf_mst_optimizer(semivariance:bool = False):
                 train, test = train_test_split(returns, train_size=0.3, shuffle=False)
                 # print_efficient_frontiers_graph(returns=train, title=f"{date} {mst_mode_print}",l2_reg=bools[0], min_weights=bools[1])
                 # print_correlation_heatmap(train, title)
-                in_sample, out_sample, non_zero_weights, weights = optimize_variance(
+                in_sample, out_sample, non_zero_weights, weights = optimize(
                     returns=returns,
                     train=train,
                     test=test,
@@ -70,11 +70,11 @@ def etf_mst_crypto_mst_optimizer():
             train, test = train_test_split(returns, train_size=0.3, shuffle=False)
             # print_efficient_frontiers_graph(train, title)
             # print_correlation_heatmap(train, title)
-            in_sample, out_sample = optimize_variance(returns=returns, train=train, test=test, max_return = 0.1, min_risk = c.BENCHMARK_RISK, l2_reg=True)
+            in_sample, out_sample = optimize(returns=returns, train=train, test=test, max_return = 0.1, min_risk = c.BENCHMARK_RISK, l2_reg=True)
             # optimize_semivariance()
 
 def etf_mst_crypto_mst_apy_optimizer():
     pass
 
 if __name__ == '__main__':
-    etf_mst_optimizer(semivariance=True)
+    etf_mst_optimizer(semivariance=False)

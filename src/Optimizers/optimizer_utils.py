@@ -13,25 +13,7 @@ import empyrical as ep
 import src.constants as c
 from src.utils import annualized_return, annualized_std
 
-def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean"):
-    year = date.split('-', maxsplit=1)[0]
-    path = '../data/mst/pickle/'
-    mode_path = f'-{mst_mode}-' if mst_mode else '-'
-    if mst_type == 'joint':
-        return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
-
-    returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
-
-    if etf:
-        return returns_etf
-    if crypto:
-        returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
-        if passive:
-            return pd.concat([returns_etf ,get_crypto_returns_passive(returns_crypto, passive_mode)], axis=1, join="inner") 
-        return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
-
-
-def optimize_variance(returns, train, test, l2_reg=False, min_weights=False, sector=False, rebalance=False, rebalance_weeks=52, semivariance=False):
+def optimize(returns, train, test, l2_reg=False, min_weights=False, sector=False, rebalance=False, rebalance_weeks=52, semivariance=False):
     in_sample_dict = collections.defaultdict(dict)
     out_sample_dict = collections.defaultdict(dict)
     for opt_mes in c.OPTIMIZER_MEASURES:
@@ -78,63 +60,6 @@ def optimize_variance(returns, train, test, l2_reg=False, min_weights=False, sec
 
     return in_sample_dict, out_sample_dict, non_zero_weights, weights
 
-def optimize_semivariance(returns):
-    pass
-
-def print_performance_title(title:str):
-    print('\n---------- OPTIMIZER ----------')
-    print(f'---------- {title.upper()} ----------\n')
-
-def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 0, min_risk = c.BENCHMARK_RISK):
-    if opt_mes == 'max sharpe':
-        return ef.max_sharpe()
-    if opt_mes == 'min volatility':
-        return ef.min_volatility()
-    if opt_mes == 'efficient return':
-        return ef.efficient_return(max_return)
-    if opt_mes == 'efficient risk':
-        return ef.efficient_risk(min_risk)
-
-def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, min_weights:bool):
-    asset_names = returns.columns.values
-    crypto = []
-    etf = []
-    for asset in asset_names:
-        if '-USD' in asset:
-             crypto.append(asset)
-        else:
-             etf.append(asset)
-
-    returns_crypto = returns[crypto]
-    returns_etf = returns[etf]
-
-    # ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, min_weights=min_weights)
-    ef_etf = generate_ef(returns_etf, sector=True, l2_reg=l2_reg, min_weights=min_weights)
-    # ef_combined = generate_ef(returns, sector=False, l2_reg=l2_reg, min_weights=min_weights)
-
-    # _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
-    _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
-    # _, mus_combined , sigmas_combined, _ = plotting.plot_efficient_frontier(ef_combined, ef_param='return', show_assets=False)
-
-    f1 = go.Figure(
-    data = [
-      #  go.Scatter(x=sigmas_crypto,y=mus_crypto, name='Efficient Frontier Crypto'),
-        go.Scatter(x=sigmas_etf, y=mus_etf, name="Efficient Frontier ETF"),
-       # go.Scatter(x=sigmas_combined, y=mus_combined, name='Efficient Frontier Crypto + ETF'),
-        #go.Scatter(x=assets_crypto['sigmas'], y = assets_crypto['mus'], name='Cryptos', mode='markers'),
-        go.Scatter(x=assets_etf['sigmas'], y = assets_etf['mus'], name='ETFs', mode='markers'),
-    ],
-    layout = go.Layout(
-    title=f"Comparison of Efficient Frontiers {title}",
-    xaxis=dict(title="Volatility"),
-    yaxis=dict(title="Return"))
-    )   
-    f1.show()
-
-def print_correlation_heatmap(returns:pd.DataFrame, title:str):
-    fig = px.imshow(returns.corr(), title=f"Heatmap Correlation : {title}")
-    fig.show()
-
 def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
     
@@ -163,6 +88,23 @@ def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode):
     cryptos = returns.columns.values
     for crypto in cryptos:
         apy_list = get_crypto_apys(crypto)
+
+def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean"):
+    year = date.split('-', maxsplit=1)[0]
+    path = '../data/mst/pickle/'
+    mode_path = f'-{mst_mode}-' if mst_mode else '-'
+    if mst_type == 'joint':
+        return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
+
+    returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
+
+    if etf:
+        return returns_etf
+    if crypto:
+        returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
+        if passive:
+            return pd.concat([returns_etf ,get_crypto_returns_passive(returns_crypto, passive_mode)], axis=1, join="inner") 
+        return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
 
 def load_benchmark(date):
     year = date.split('-', maxsplit=1)[0]
@@ -200,3 +142,53 @@ def chunks(n:int, size:int):
     if rest != 0:
         out.append(rest)
     return out
+
+def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 0, min_risk = c.BENCHMARK_RISK):
+    if opt_mes == 'max sharpe':
+        return ef.max_sharpe()
+    if opt_mes == 'min volatility':
+        return ef.min_volatility()
+    if opt_mes == 'efficient return':
+        return ef.efficient_return(max_return)
+    if opt_mes == 'efficient risk':
+        return ef.efficient_risk(min_risk)
+
+def print_correlation_heatmap(returns:pd.DataFrame, title:str):
+    fig = px.imshow(returns.corr(), title=f"Heatmap Correlation : {title}")
+    fig.show()
+
+def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, min_weights:bool):
+    asset_names = returns.columns.values
+    crypto = []
+    etf = []
+    for asset in asset_names:
+        if '-USD' in asset:
+             crypto.append(asset)
+        else:
+             etf.append(asset)
+
+    returns_crypto = returns[crypto]
+    returns_etf = returns[etf]
+
+    # ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, min_weights=min_weights)
+    ef_etf = generate_ef(returns_etf, sector=True, l2_reg=l2_reg, min_weights=min_weights)
+    # ef_combined = generate_ef(returns, sector=False, l2_reg=l2_reg, min_weights=min_weights)
+
+    # _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
+    _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
+    # _, mus_combined , sigmas_combined, _ = plotting.plot_efficient_frontier(ef_combined, ef_param='return', show_assets=False)
+
+    f1 = go.Figure(
+    data = [
+      #  go.Scatter(x=sigmas_crypto,y=mus_crypto, name='Efficient Frontier Crypto'),
+        go.Scatter(x=sigmas_etf, y=mus_etf, name="Efficient Frontier ETF"),
+       # go.Scatter(x=sigmas_combined, y=mus_combined, name='Efficient Frontier Crypto + ETF'),
+        #go.Scatter(x=assets_crypto['sigmas'], y = assets_crypto['mus'], name='Cryptos', mode='markers'),
+        go.Scatter(x=assets_etf['sigmas'], y = assets_etf['mus'], name='ETFs', mode='markers'),
+    ],
+    layout = go.Layout(
+    title=f"Comparison of Efficient Frontiers {title}",
+    xaxis=dict(title="Volatility"),
+    yaxis=dict(title="Return"))
+    )   
+    f1.show()
