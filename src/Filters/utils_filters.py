@@ -98,19 +98,19 @@ def expense_ratio_filter_yf(filename:str, maximum:float):
     with open(filename, "r", encoding="UTF-8") as ticker_file:
         none_tickers = ticker_file.read().split('\n')
 
-    if not os.path.exists('../data/etf-er-none.txt'):
-        with open('../data/etf-er-none.txt', "w", encoding="UTF-8") as ticker_none_file:
+    if not os.path.exists('../data/new-etf-er-none.txt'):
+        with open('../data/new-etf-er-none.txt', "w", encoding="UTF-8") as ticker_none_file:
             ticker_none_file.write("\n".join(map(str, none_tickers)))
     else:
-         with open('../data/etf-er-none.txt', 'r', encoding='UTF-8') as ticker_none_file:
+         with open('../data/new-etf-er-none.txt', 'r', encoding='UTF-8') as ticker_none_file:
              none_tickers = ticker_none_file.read().split("\n")
 
-    if os.path.exists('../data/etf-er-above.txt'):
-        with open('../data/etf-er-above.txt', 'r', encoding='UTF-8') as ticker_above_file:
+    if os.path.exists('../data/new-etf-er-above.txt'):
+        with open('../data/new-etf-er-above.txt', 'r', encoding='UTF-8') as ticker_above_file:
             above_tickers = ticker_above_file.read().split("\n")
 
-    if os.path.exists('../data/etf-er-f.txt'):
-        with open('../data/etf-er-f.txt', 'r', encoding='UTF-8') as ticker_f_file:
+    if os.path.exists('../data/new-etf-er-f.txt'):
+        with open('../data/new-etf-er-f.txt', 'r', encoding='UTF-8') as ticker_f_file:
             new_tickers = ticker_f_file.read().split("\n")
 
     none_tickers = none_tickers[25:]
@@ -132,13 +132,13 @@ def expense_ratio_filter_yf(filename:str, maximum:float):
     print("\nWritting to files...\n")
     time.sleep(1)
 
-    with open('../data/etf-er-f.txt', 'w', encoding='UTF-8') as txt_er_filtered:
+    with open('../data/new-etf-er-f.txt', 'w', encoding='UTF-8') as txt_er_filtered:
         txt_er_filtered.write("\n".join(map(str, new_tickers)))
 
-    with open('../data/etf-er-none.txt', 'w', encoding='UTF-8') as txt_er_filtered:
+    with open('../data/new-etf-er-none.txt', 'w', encoding='UTF-8') as txt_er_filtered:
         txt_er_filtered.write("\n".join(map(str, none_tickers)))
 
-    with open('../data/etf-er-above.txt', 'w', encoding='UTF-8') as txt_er_filtered:
+    with open('../data/new-etf-er-above.txt', 'w', encoding='UTF-8') as txt_er_filtered:
         txt_er_filtered.write("\n".join(map(str, above_tickers)))
 
 
