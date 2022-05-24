@@ -3,16 +3,16 @@
         "No sr": [
             {
                 "0": {
-                    "nr_weights": 4,
-                    "nr_0_weights": 20,
+                    "nr_weights": 6,
+                    "nr_0_weights": 18,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 18.819,
-                            "std": 21.07
+                            "real return": 38.795,
+                            "std": 23.31
                         }
                     }
                 }
@@ -27,24 +27,24 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 24.39,
-                            "std": 21.03
+                            "real return": 38.39,
+                            "std": 23.08
                         }
                     }
                 }
             },
             {
                 "2": {
-                    "nr_weights": 6,
-                    "nr_0_weights": 18,
+                    "nr_weights": 12,
+                    "nr_0_weights": 12,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 15.319,
-                            "std": 17.8
+                            "real return": 19.577,
+                            "std": 15.66
                         }
                     }
                 }
@@ -59,8 +59,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 21.858,
-                            "std": 18.39
+                            "real return": 19.475,
+                            "std": 15.57
                         }
                     }
                 }
@@ -69,16 +69,16 @@
         "sr0": [
             {
                 "0": {
-                    "nr_weights": 4,
-                    "nr_0_weights": 25,
+                    "nr_weights": 5,
+                    "nr_0_weights": 24,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 3.73,
-                            "std": 25.55
+                            "real return": 8.299,
+                            "std": 25.2
                         }
                     }
                 }
@@ -93,24 +93,24 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 5.046,
-                            "std": 25.35
+                            "real return": 9.332,
+                            "std": 24.88
                         }
                     }
                 }
             },
             {
                 "2": {
-                    "nr_weights": 6,
-                    "nr_0_weights": 23,
+                    "nr_weights": 13,
+                    "nr_0_weights": 16,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 7.706,
-                            "std": 20.7
+                            "real return": 30.335,
+                            "std": 27.6
                         }
                     }
                 }
@@ -125,8 +125,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 8.948,
-                            "std": 20.77
+                            "real return": 29.365,
+                            "std": 26.75
                         }
                     }
                 }
@@ -143,8 +143,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 13.612,
-                            "std": 15.98
+                            "real return": 17.022,
+                            "std": 17.73
                         }
                     }
                 }
@@ -159,8 +159,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 13.426,
-                            "std": 15.75
+                            "real return": 16.822,
+                            "std": 17.47
                         }
                     }
                 }
@@ -175,8 +175,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 4.549,
-                            "std": 23.84
+                            "real return": 11.614,
+                            "std": 28.61
                         }
                     }
                 }
@@ -191,8 +191,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 4.596,
-                            "std": 23.54
+                            "real return": 11.544,
+                            "std": 28.24
                         }
                     }
                 }
@@ -203,16 +203,16 @@
         "No sr": [
             {
                 "0": {
-                    "nr_weights": 4,
-                    "nr_0_weights": 17,
+                    "nr_weights": 6,
+                    "nr_0_weights": 15,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 11.128,
-                            "std": 13.18
+                            "real return": 12.968,
+                            "std": 14.52
                         }
                     }
                 }
@@ -227,24 +227,24 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 12.237,
-                            "std": 13.36
+                            "real return": 13.308,
+                            "std": 14.52
                         }
                     }
                 }
             },
             {
                 "2": {
-                    "nr_weights": 5,
-                    "nr_0_weights": 16,
+                    "nr_weights": 10,
+                    "nr_0_weights": 11,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 11.025,
-                            "std": 13.0
+                            "real return": 14.022,
+                            "std": 14.68
                         }
                     }
                 }
@@ -259,8 +259,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 12.124,
-                            "std": 13.16
+                            "real return": 14.35,
+                            "std": 14.67
                         }
                     }
                 }
@@ -269,16 +269,16 @@
         "sr0": [
             {
                 "0": {
-                    "nr_weights": 3,
-                    "nr_0_weights": 12,
+                    "nr_weights": 4,
+                    "nr_0_weights": 11,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 22.106,
-                            "std": 19.22
+                            "real return": -8.14,
+                            "std": 18.35
                         }
                     }
                 }
@@ -293,24 +293,24 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 21.819,
-                            "std": 19.14
+                            "real return": -8.247,
+                            "std": 18.34
                         }
                     }
                 }
             },
             {
                 "2": {
-                    "nr_weights": 3,
-                    "nr_0_weights": 12,
+                    "nr_weights": 5,
+                    "nr_0_weights": 10,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 28.376,
-                            "std": 18.89
+                            "real return": -2.615,
+                            "std": 18.36
                         }
                     }
                 }
@@ -325,8 +325,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 27.838,
-                            "std": 18.79
+                            "real return": -2.533,
+                            "std": 18.26
                         }
                     }
                 }
@@ -335,16 +335,16 @@
         "sr1": [
             {
                 "0": {
-                    "nr_weights": 1,
-                    "nr_0_weights": 15,
+                    "nr_weights": 4,
+                    "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": -5.374,
-                            "std": 16.32
+                            "real return": 296.283,
+                            "std": 762.18
                         }
                     }
                 }
@@ -359,24 +359,24 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": -2.867,
-                            "std": 16.37
+                            "real return": 296.159,
+                            "std": 767.7
                         }
                     }
                 }
             },
             {
                 "2": {
-                    "nr_weights": 3,
-                    "nr_0_weights": 13,
+                    "nr_weights": 6,
+                    "nr_0_weights": 10,
                     "l2_reg": true,
                     "min_weights": false,
                     "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 62.23,
-                            "std": 155.05
+                            "real return": 278.955,
+                            "std": 662.89
                         }
                     }
                 }
@@ -391,8 +391,8 @@
                     "test": {
                         "efficient risk": {
                             "return": 0,
-                            "real return": 62.252,
-                            "std": 150.53
+                            "real return": 279.257,
+                            "std": 666.93
                         }
                     }
                 }
