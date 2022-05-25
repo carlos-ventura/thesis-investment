@@ -80,15 +80,17 @@ def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode):
     for crypto in cryptos:
         apy_list = get_crypto_apys(crypto)
 
-def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean"):
+def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean", benchmark = False):
     year = date.split('-', maxsplit=1)[0]
     path = '../data/mst/pickle/'
     mode_path = f'-{mst_mode}-' if mst_mode else '-'
     if mst_type == 'joint':
         return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
 
-    # returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
-    returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")
+    if benchmark:
+        returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")
+    else:
+        returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')["ACWI"]
 
     if etf and not crypto:
         return returns_etf
