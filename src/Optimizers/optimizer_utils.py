@@ -27,7 +27,6 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
     _, sigma_train, _= ef_train.portfolio_performance()
 
     min_risk = sigma_train + 0.0001 if sigma_train > c.BENCHMARK_RISK else c.BENCHMARK_RISK
-    print(sigma_train)
 
     ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
@@ -63,7 +62,7 @@ def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_w
 
     sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
     if sector:
-        sector_lower = {'etf': c.ETF_WEIGHT}  
+        sector_lower = {'etf': c.ETF_WEIGHT, "crypto": c.CRYPTO_WEIGHT}  
         sector_upper = {'crypto': c.CRYPTO_WEIGHT }
         ef.add_sector_constraints(sector_mapper=sector_mapper, sector_upper=sector_upper, sector_lower=sector_lower)
 
