@@ -25,17 +25,16 @@ def optimize(returns, train, test, l2_reg=False, min_weights=False, sector=False
             print(non_zero_weights)
             print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-            mu_train, sigma_train, _= ef_train.portfolio_performance(verbose=True)
+            mu_train, sigma_train, _= ef_train.portfolio_performance()
 
             in_sample_dict[opt_mes] = {'return': round(mu_train * 100, 2), 'std': round(sigma_train * 100, 2)}
 
             port_returns = pd.Series(weights) * test
             port_returns = port_returns.sum(axis=1).to_frame()
 
-            ef_test = generate_ef(test)
+            ef_test = generate_ef(test, semivariance=semivariance)
             ef_test.set_weights(weights)
             mu_test, sigma_test , _ = ef_test.portfolio_performance(verbose=True)
-            real_mu_test = float(ep.annual_return(port_returns, period="weekly"))
 
 
         if rebalance:
@@ -54,13 +53,15 @@ def optimize(returns, train, test, l2_reg=False, min_weights=False, sector=False
             non_zero_weights = rebalanced_port.columns.values
             rebalanced_returns = rebalanced_port.sum(axis=1)
             sigma_test = float(ep.annual_volatility(rebalanced_returns, period="weekly"))
-            real_mu_test = float(ep.annual_return(rebalanced_returns, period="weekly"))
+        
+        # print("ep Downside Risk", round(float(ep.downside_risk(port_returns, period="weekly"))* 100, 3), "%")
+        std_string = "down std" if semivariance else "std"
 
-        out_sample_dict[opt_mes] = {'return': round(mu_test * 100, 2), 'real return': round(real_mu_test * 100, 3), 'std': round(sigma_test * 100, 2)}
+        out_sample_dict[opt_mes] = {'return': round(mu_test * 100, 2), std_string: round(float(ep.annual_volatility(port_returns, period="weekly"))* 100, 2)}
 
-    return in_sample_dict, out_sample_dict, non_zero_weights, weights
+    return {}, out_sample_dict, non_zero_weights, weights
 
-def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
+def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
     
     if semivariance:
@@ -70,8 +71,8 @@ def generate_ef(returns:pd.DataFrame, sector:bool = True, l2_reg = False, min_we
         S = risk_models.sample_cov(returns, returns_data=True, frequency=52)
         ef = EfficientFrontier(mu, S, verbose=verbose, solver="SCS", solver_options={"max_iters": 999999})
 
+    sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
     if sector:
-        sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
         sector_lower = {'etf': c.ETF_WEIGHT}  
         sector_upper = {'crypto': c.CRYPTO_WEIGHT }
         ef.add_sector_constraints(sector_mapper=sector_mapper, sector_upper=sector_upper, sector_lower=sector_lower)
@@ -112,21 +113,16 @@ def load_benchmark(date):
     return pd.read_pickle(path)
 
 def benchmark_stats(returns):
-    train, test = train_test_split(returns, train_size=0.3, shuffle=False)
+    _, test = train_test_split(returns, train_size=0.3, shuffle=False)
     individual = {}
-    return_train, return_test, std_train, std_test = [], [], [], []
+    return_test, std_test = [], []
     for bench in c.WORLD_ETF_TICKERS:
-        ret_train = annualized_return(train[bench])
         ret_test = annualized_return(test[bench])
-        vol_train = annualized_std(train[bench])
         vol_test = annualized_std(test[bench])
-        individual[bench] = {"train": {"return": round(ret_train, 3), "std": round(vol_train, 3)},
-         "test": {"return": round(ret_test, 3), "std": round(vol_test, 3)}}
-        return_train.append(ret_train)
+        individual[bench] = {"test": {"return": round(ret_test * 100, 2), "std": round(vol_test * 100, 2)}}
         return_test.append(ret_test)
-        std_train.append(vol_train)
         std_test.append(vol_test)
-    average = {'train': {'return': round(mean(return_train), 3), 'std': round(mean(std_train), 3)},'test': {'return': round(mean(return_test), 3), 'std': round(mean(std_test), 3)}}
+    average = {'test': {'return': round(mean(return_test * 100), 2), 'std': round(mean(std_test * 100), 2)}}
 
     return {"individual": individual, "average": average}
 
