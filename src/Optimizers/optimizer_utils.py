@@ -1,6 +1,7 @@
 import json
 import math
 from statistics import mean
+from matplotlib.pyplot import axis
 import pandas as pd
 from pypfopt import EfficientSemivariance, expected_returns, objective_functions, risk_models, plotting, HRPOpt
 from pypfopt.efficient_frontier import EfficientFrontier
@@ -13,51 +14,40 @@ import empyrical as ep
 import src.constants as c
 from src.utils import annualized_return, annualized_std
 
-def optimize(returns, train, test, l2_reg=False, min_weights=False, sector=False, rebalance=False, rebalance_weeks=52, semivariance=False):
+def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivariance=False):
+    min_var_measure = c.OPTIMIZER_MEASURES[0]
+    risk_measure = c.OPTIMIZER_MEASURES[1]
     in_sample_dict = collections.defaultdict(dict)
     out_sample_dict = collections.defaultdict(dict)
-    for opt_mes in c.OPTIMIZER_MEASURES:
-        if not rebalance:
-            ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
-            weights = optimizer_measures_weights(ef_train, opt_mes)
-            cleaned_weights = ef_train.clean_weights()
-            non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
-            print(non_zero_weights)
-            print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-            mu_train, sigma_train, _= ef_train.portfolio_performance()
+    # Calculate real min variance and compare with benchmark risk
 
-            in_sample_dict[opt_mes] = {'return': round(mu_train * 100, 2), 'std': round(sigma_train * 100, 2)}
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
+    _ = optimizer_measures_weights(ef_train, min_var_measure)
+    _, sigma_train, _= ef_train.portfolio_performance()
 
-            port_returns = pd.Series(weights) * test
-            port_returns = port_returns.sum(axis=1).to_frame()
+    min_risk = sigma_train + 0.0001 if sigma_train > c.BENCHMARK_RISK else c.BENCHMARK_RISK
+    print(sigma_train)
 
-            ef_test = generate_ef(test, semivariance=semivariance)
-            ef_test.set_weights(weights)
-            mu_test, sigma_test , _ = ef_test.portfolio_performance(verbose=True)
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
+    weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
+    cleaned_weights = ef_train.clean_weights()
+    non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
+    print(non_zero_weights)
+    print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
+    mu_train, sigma_train, _= ef_train.portfolio_performance()
 
-        if rebalance:
-            mu_test = 0
-            rebalanced_port = pd.DataFrame()
-            for count in chunks(test.shape[0], rebalance_weeks):
-                ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
-                weights = optimizer_measures_weights(ef_train, opt_mes)
-                cleaned_weights = ef_train.clean_weights()
-                non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
-                rebalanced_port = pd.concat([rebalanced_port, pd.Series(cleaned_weights) * test.head(count)])
-                rebalanced_port = rebalanced_port
-                train = pd.concat([train, test.head(count)])
-                test = test.drop(test.index[range(count)])
-            rebalanced_port = rebalanced_port.loc[:, (rebalanced_port != 0).any(axis=0)]
-            non_zero_weights = rebalanced_port.columns.values
-            rebalanced_returns = rebalanced_port.sum(axis=1)
-            sigma_test = float(ep.annual_volatility(rebalanced_returns, period="weekly"))
-        
-        # print("ep Downside Risk", round(float(ep.downside_risk(port_returns, period="weekly"))* 100, 3), "%")
-        std_string = "down std" if semivariance else "std"
+    in_sample_dict[risk_measure] = {'return': round(mu_train * 100, 2), 'std': round(sigma_train * 100, 2)}
 
-        out_sample_dict[opt_mes] = {'return': round(mu_test * 100, 2), std_string: round(float(ep.annual_volatility(port_returns, period="weekly"))* 100, 2)}
+    port_returns = pd.Series(weights) * test
+    port_returns = port_returns.sum(axis=1).to_frame()
+
+    ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
+    ef_test.set_weights(weights)
+    mu_test, sigma_test , _ = ef_test.portfolio_performance(verbose=True)
+
+    out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(sigma_test * 100, 2)}
 
     return {}, out_sample_dict, non_zero_weights, weights
 
@@ -97,9 +87,10 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
     if mst_type == 'joint':
         return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
 
-    returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
+    # returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
+    returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")
 
-    if etf:
+    if etf and not crypto:
         return returns_etf
     if crypto:
         returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
@@ -139,7 +130,7 @@ def chunks(n:int, size:int):
         out.append(rest)
     return out
 
-def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, max_return = 0, min_risk = c.BENCHMARK_RISK):
+def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, min_risk = c.BENCHMARK_RISK, max_return = 0):
     if opt_mes == 'max sharpe':
         return ef.max_sharpe()
     if opt_mes == 'min volatility':
