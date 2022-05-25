@@ -88,9 +88,9 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
         return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
 
     if benchmark:
-        returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")
+        returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")["ACWI"]
     else:
-        returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')["ACWI"]
+        returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
 
     if etf and not crypto:
         return returns_etf

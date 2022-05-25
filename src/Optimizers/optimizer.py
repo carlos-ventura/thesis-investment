@@ -42,7 +42,6 @@ def etf_mst_optimizer(semivariance=False):
                 # print_efficient_frontiers_graph(returns=train, title=f"{date} {mst_mode_print}",l2_reg=bools[0], min_weights=bools[1])
                 # print_correlation_heatmap(train, title)
                 in_sample, out_sample, non_zero_weights, weights = optimize(
-                    returns=returns,
                     train=train,
                     test=test,
                     l2_reg=bools[0],
@@ -58,7 +57,7 @@ def etf_mst_optimizer(semivariance=False):
 
 def etf_mst_crypto_mst_optimizer(semivariance=False):
     sector=True
-    benchmark=True
+    benchmark=False
     for date in c.START_DATES:
         print(date)
         for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
@@ -75,7 +74,6 @@ def etf_mst_crypto_mst_optimizer(semivariance=False):
                 # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1])
                 # print_correlation_heatmap(train, title)
                 in_sample, out_sample, non_zero_weights, weights = optimize(
-                        returns=returns,
                         train=train,
                         test=test,
                         l2_reg=bools[0],
