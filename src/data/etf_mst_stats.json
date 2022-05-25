@@ -8,12 +8,7 @@
                     "nr_0_weights": 23,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 6.66,
-                            "std": 11.92
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.08,
@@ -28,12 +23,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 6.44,
-                            "std": 11.81
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.85,
@@ -48,12 +38,7 @@
                     "nr_0_weights": 16,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 4.7,
-                            "std": 20.01
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.18,
@@ -68,12 +53,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 4.55,
-                            "std": 20.05
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.04,
@@ -90,12 +70,7 @@
                     "nr_0_weights": 28,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 13.13,
-                            "std": 8.28
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.55,
@@ -110,12 +85,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 12.87,
-                            "std": 8.48
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.48,
@@ -130,12 +100,7 @@
                     "nr_0_weights": 20,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 10.54,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.51,
@@ -150,12 +115,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 10.41,
-                            "std": 20.04
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.54,
@@ -172,12 +132,7 @@
                     "nr_0_weights": 19,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 14.39,
-                            "std": 13.66
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 15.0,
@@ -192,12 +147,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 14.21,
-                            "std": 13.42
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 14.74,
@@ -212,12 +162,7 @@
                     "nr_0_weights": 14,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 13.68,
-                            "std": 8.15
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.66,
@@ -232,12 +177,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 13.53,
-                            "std": 8.04
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.58,
@@ -257,12 +197,7 @@
                     "nr_0_weights": 17,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 19.66,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 16.16,
@@ -277,12 +212,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 19.38,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 16.29,
@@ -297,12 +227,7 @@
                     "nr_0_weights": 15,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 19.26,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 17.11,
@@ -317,12 +242,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 18.98,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 17.26,
@@ -339,12 +259,7 @@
                     "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 16.1,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.21,
@@ -359,12 +274,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 16.01,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.2,
@@ -379,12 +289,7 @@
                     "nr_0_weights": 11,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 15.99,
-                            "std": 19.79
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 10.86,
@@ -399,12 +304,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 15.87,
-                            "std": 19.69
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 10.85,
@@ -421,12 +321,7 @@
                     "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 63.36,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -9.03,
@@ -441,12 +336,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 63.26,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -9.18,
@@ -461,12 +351,7 @@
                     "nr_0_weights": 10,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {
-                        "efficient risk": {
-                            "return": 62.89,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -8.63,
@@ -481,12 +366,7 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {
-                        "efficient risk": {
-                            "return": 62.8,
-                            "std": 20.0
-                        }
-                    },
+                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -8.73,
