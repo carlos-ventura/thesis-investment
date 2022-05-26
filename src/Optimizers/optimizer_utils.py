@@ -12,7 +12,7 @@ import collections
 import empyrical as ep
 
 import src.constants as c
-from src.utils import annualized_return, annualized_std
+from src.utils import annualized_return, annualized_std, convert_annual_to_week
 
 def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivariance=False):
     min_var_measure = c.OPTIMIZER_MEASURES[0]
@@ -69,17 +69,36 @@ def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_w
 
     return ef
 
-def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode):
-    cryptos = returns.columns.values
+def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode, apy_dict:dict):
+    tickers = returns.columns.values
+    cryptos = [t for t in tickers if '-USD' in t]
+    apy = 0
     for crypto in cryptos:
-        apy_list = get_crypto_apys(crypto)
+        crypto_search = crypto.split("-")[0]
+        apy_list = apy_dict[crypto_search]
+        if passive_mode == "mean":
+            apy = mean(apy_list)
+        if passive_mode == "min":
+            apy = min(apy_list)
+        if passive_mode == "max":
+            apy = max(apy_list)
 
-def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean", benchmark = False):
+        weekly_apy = convert_annual_to_week(apy)
+
+        returns[crypto] += weekly_apy
+    return returns
+
+
+def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean", benchmark = False, dict_apy = None):
     year = date.split('-', maxsplit=1)[0]
     path = '../data/mst/pickle/'
     mode_path = f'-{mst_mode}-' if mst_mode else '-'
     if mst_type == 'joint':
-        return pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
+        returns_combined = pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
+        if passive:
+            returns_combined = get_crypto_returns_passive(returns_combined, passive_mode, dict_apy)
+        else:    
+            return returns_combined
 
     if benchmark:
         returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")["ACWI"].to_frame()
@@ -91,7 +110,7 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
     if crypto:
         returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
         if passive:
-            return pd.concat([returns_etf ,get_crypto_returns_passive(returns_crypto, passive_mode)], axis=1, join="inner") 
+            return pd.concat([returns_etf , get_crypto_returns_passive(returns_crypto, passive_mode, dict_apy)], axis=1, join="inner") 
         return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
 
 def load_benchmark(date):
