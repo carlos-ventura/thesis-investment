@@ -14,20 +14,20 @@ import empyrical as ep
 import src.constants as c
 from src.utils import annualized_return, annualized_std, convert_annual_to_week
 
-def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivariance=False):
+def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, sector=False, semivariance=False):
     min_var_measure = c.OPTIMIZER_MEASURES[0]
     risk_measure = c.OPTIMIZER_MEASURES[1]
     out_sample_dict = collections.defaultdict(dict)
 
     # Calculate real min variance and compare with benchmark risk
 
-    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     _ = optimizer_measures_weights(ef_train, min_var_measure, semivariance=semivariance)
     _, sigma_train, _= ef_train.portfolio_performance()
 
     min_risk = sigma_train + 0.0001 if sigma_train > c.BENCHMARK_RISK else c.BENCHMARK_RISK
 
-    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
@@ -37,7 +37,7 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
     port_returns = pd.Series(weights) * test
     port_returns = port_returns.sum(axis=1).to_frame()
 
-    ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
+    ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
     mu_test, _ , _ = ef_test.portfolio_performance(verbose=True)
 
@@ -45,7 +45,7 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
 
     return out_sample_dict, non_zero_weights, weights
 
-def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
+def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
     
     if semivariance:
@@ -57,8 +57,8 @@ def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_w
 
     sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
     if sector:
-        sector_lower = {'etf': c.ETF_WEIGHT, "crypto": c.CRYPTO_WEIGHT}  
-        sector_upper = {'crypto': c.CRYPTO_WEIGHT }
+        sector_lower = {'etf': 1 - crypto_w, "crypto": crypto_w}  
+        sector_upper = {'crypto': crypto_w }
         ef.add_sector_constraints(sector_mapper=sector_mapper, sector_upper=sector_upper, sector_lower=sector_lower)
 
     if l2_reg:
