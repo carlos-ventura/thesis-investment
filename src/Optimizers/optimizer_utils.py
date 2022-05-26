@@ -17,7 +17,6 @@ from src.utils import annualized_return, annualized_std
 def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivariance=False):
     min_var_measure = c.OPTIMIZER_MEASURES[0]
     risk_measure = c.OPTIMIZER_MEASURES[1]
-    in_sample_dict = collections.defaultdict(dict)
     out_sample_dict = collections.defaultdict(dict)
 
     # Calculate real min variance and compare with benchmark risk
