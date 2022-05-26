@@ -1,0 +1,12 @@
+{
+    "2017": {
+        "joint_mst": 25,
+        "joint_mst_sr0": 25,
+        "joint_mst_sr1": 20
+    },
+    "2019": {
+        "joint_mst": 23,
+        "joint_mst_sr0": 18,
+        "joint_mst_sr1": 18
+    }
+}
