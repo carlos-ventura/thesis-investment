@@ -23,7 +23,7 @@ MST_TYPES = ['separate', 'joint']
 
 OPTIMIZER_MEASURES = ['min volatility','efficient risk'] # efficient risk, min volatility
 
-WEIGHTS_FUNCTIONS = ['Empty', 'Min w', "Penalty", "Min w and"]
+WEIGHTS_FUNCTIONS = ['Empty', 'Min w', "Penalty", "Min w and Penalty"]
 
 MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
