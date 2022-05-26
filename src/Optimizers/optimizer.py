@@ -44,12 +44,14 @@ def print_markers():
     autosize=False,
     width=700,
     height=500,
-    title=f"Comparison of portfolio performance {' and '.join(str(x) for x in c.START_TEST_DATES)} SR filters (MST)",
+    # title=f"Comparison of portfolio performance {' and '.join(str(x) for x in c.START_TEST_DATES)} SR filters (MST)",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return")),
 
     )   
     f1.show()
+    pio.kaleido.scope.mathjax = None
+    pio.write_image(f1, 'sr_filters_plot.pdf', width=700, height=500)
 
 def print_markers_inputs():
     f1 = go.Figure(
@@ -63,7 +65,7 @@ def print_markers_inputs():
     autosize=False,
     width=700,
     height=500,
-    title=f"Comparison of input parameters {' and '.join(str(x) for x in c.START_TEST_DATES)}",
+    # title=f"Comparison of input parameters {' and '.join(str(x) for x in c.START_TEST_DATES)}",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return")),
 
