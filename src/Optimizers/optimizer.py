@@ -37,9 +37,9 @@ def print_markers():
     ],
     layout = go.Layout(
     autosize=False,
-    width=1100,
-    height=600,
-    title=f"Comparison of performance with different sharpe ratio filters (MST) Start test date is {' and '.join(str(x) for x in c.START_TEST_DATES)}",
+    width=700,
+    height=500,
+    title=f"Comparison of portfolio performance {' and '.join(str(x) for x in c.START_TEST_DATES)} SR filters (MST)",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return")),
 
