@@ -8,7 +8,6 @@
                     "nr_0_weights": 23,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.08,
@@ -23,7 +22,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.85,
@@ -38,7 +36,6 @@
                     "nr_0_weights": 16,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.18,
@@ -53,7 +50,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.04,
@@ -70,7 +66,6 @@
                     "nr_0_weights": 28,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.55,
@@ -85,7 +80,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.48,
@@ -100,7 +94,6 @@
                     "nr_0_weights": 20,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.51,
@@ -115,7 +108,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 5.54,
@@ -132,7 +124,6 @@
                     "nr_0_weights": 19,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 15.0,
@@ -147,7 +138,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 14.74,
@@ -162,7 +152,6 @@
                     "nr_0_weights": 14,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.66,
@@ -177,7 +166,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 6.58,
@@ -197,7 +185,6 @@
                     "nr_0_weights": 17,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 16.16,
@@ -212,7 +199,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 16.29,
@@ -227,7 +213,6 @@
                     "nr_0_weights": 15,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 17.11,
@@ -242,7 +227,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 17.26,
@@ -259,7 +243,6 @@
                     "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.21,
@@ -274,7 +257,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 7.2,
@@ -289,7 +271,6 @@
                     "nr_0_weights": 11,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 10.86,
@@ -304,7 +285,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": 10.85,
@@ -321,7 +301,6 @@
                     "nr_0_weights": 12,
                     "l2_reg": false,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -9.03,
@@ -336,7 +315,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": false,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -9.18,
@@ -351,7 +329,6 @@
                     "nr_0_weights": 10,
                     "l2_reg": true,
                     "min_weights": false,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -8.63,
@@ -366,7 +343,6 @@
                     "nr_0_weights": 0,
                     "l2_reg": true,
                     "min_weights": true,
-                    "train": {},
                     "test": {
                         "efficient risk": {
                             "return": -8.73,
