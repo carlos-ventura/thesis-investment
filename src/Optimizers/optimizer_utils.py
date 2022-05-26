@@ -22,7 +22,7 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
     # Calculate real min variance and compare with benchmark risk
 
     ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, verbose=False)
-    _ = optimizer_measures_weights(ef_train, min_var_measure)
+    _ = optimizer_measures_weights(ef_train, min_var_measure, semivariance=semivariance)
     _, sigma_train, _= ef_train.portfolio_performance()
 
     min_risk = sigma_train + 0.0001 if sigma_train > c.BENCHMARK_RISK else c.BENCHMARK_RISK
@@ -39,9 +39,9 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
 
     ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance)
     ef_test.set_weights(weights)
-    mu_test, sigma_test , _ = ef_test.portfolio_performance(verbose=True)
+    mu_test, _ , _ = ef_test.portfolio_performance(verbose=True)
 
-    out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(sigma_test * 100, 2)}
+    out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)}
 
     return out_sample_dict, non_zero_weights, weights
 
@@ -126,11 +126,11 @@ def chunks(n:int, size:int):
         out.append(rest)
     return out
 
-def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, min_risk = c.BENCHMARK_RISK, max_return = 0):
+def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, min_risk = c.BENCHMARK_RISK, max_return = 0, semivariance=False):
     if opt_mes == 'max sharpe':
         return ef.max_sharpe()
     if opt_mes == 'min volatility':
-        return ef.min_volatility()
+        return ef.min_semivariance() if semivariance else ef.min_volatility()
     if opt_mes == 'efficient return':
         return ef.efficient_return(max_return)
     if opt_mes == 'efficient risk':
