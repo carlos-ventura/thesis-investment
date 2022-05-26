@@ -35,10 +35,6 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
     print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-    mu_train, sigma_train, _= ef_train.portfolio_performance()
-
-    in_sample_dict[risk_measure] = {'return': round(mu_train * 100, 2), 'std': round(sigma_train * 100, 2)}
-
     port_returns = pd.Series(weights) * test
     port_returns = port_returns.sum(axis=1).to_frame()
 
@@ -48,7 +44,7 @@ def optimize(train, test, l2_reg=False, min_weights=False, sector=False, semivar
 
     out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(sigma_test * 100, 2)}
 
-    return {}, out_sample_dict, non_zero_weights, weights
+    return out_sample_dict, non_zero_weights, weights
 
 def generate_ef(returns:pd.DataFrame, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
