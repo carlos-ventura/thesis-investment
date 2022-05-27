@@ -3,6 +3,7 @@ import itertools
 import json
 from statistics import mean
 from turtle import write
+from typing import Counter
 import plotly.graph_objects as go
 import plotly.io as pio
 
@@ -10,6 +11,12 @@ from sklearn.model_selection import train_test_split
 from src.Optimizers.optimizer_utils import benchmark_stats, load_benchmark, print_correlation_heatmap,print_efficient_frontiers_graph, load_mst_data, optimize, write_json
 
 import src.constants as c
+
+COUNTER_TESTS = 0
+
+def increment():
+    global COUNTER_TESTS
+    COUNTER_TESTS+=1
 
 DICT_BENCHMARK_STATS = collections.defaultdict(dict)
 DICT_ETF_MST = collections.defaultdict(dict)
@@ -96,7 +103,7 @@ def print_markers():
     autosize=False,
     width=700,
     height=500,
-    # title=f"Comparison of portfolio performance {' and '.join(str(x) for x in c.START_TEST_DATES)} SR filters (MST)",
+    title=f"Comparison of portfolio performance {' and '.join(str(x) for x in c.START_TEST_DATES)} SR filters (MST)",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return")),
 
@@ -117,7 +124,7 @@ def print_markers_inputs():
     autosize=False,
     width=700,
     height=500,
-    # title=f"Comparison of input parameters {' and '.join(str(x) for x in c.START_TEST_DATES)}",
+    title=f"Comparison of input parameters {' and '.join(str(x) for x in c.START_TEST_DATES)}",
     xaxis=dict(title="Volatility"),
     yaxis=dict(title="Return")),
 
@@ -176,33 +183,36 @@ def etf_mst_optimizer(crypto_w:float, semivariance=False, benchmark=False):
         test_date = c.START_TEST_DATES[index_date]
         print(date)
         print(mst_mode_print)
-        DICT_ETF_MST[test_date]['semi_variance'] = semivariance
-        DICT_ETF_MST[test_date][mst_mode_print]=[]
-        # l = [False, True]
-        # bools_list = [list(i) for i in itertools.product(l, repeat=2)]
-        # for i, bools in enumerate(bools_list):
-        bools = [False, False]
-        returns = load_mst_data(date, mst_type=None, mst_mode=mst_mode, etf=True, benchmark=benchmark)
-        train, test = train_test_split(returns, train_size=0.3, shuffle=False)
-        # print_efficient_frontiers_graph(returns=train, title=f"{date} {mst_mode_print}",l2_reg=bools[0], min_weights=bools[1])
-        # print_correlation_heatmap(train, f"{date} etf_mst {mst_mode_print}  benchmark:{benchmark}")
-        out_sample, non_zero_weights, weights = optimize(
-            train=train,
-            test=test,
-            l2_reg=bools[0],
-            min_weights=bools[1],
-            sector=sector,
-            semivariance=semivariance,
-            crypto_w=crypto_w
-            )
+        for mst_mode in c.MST_MODES:
+            DICT_ETF_MST[test_date]['semi_variance'] = semivariance
+            DICT_ETF_MST[test_date][mst_mode_print]=[]
+            l = [False, True]
+            bools_list = [list(i) for i in itertools.product(l, repeat=2)]
+            for i, bools in enumerate(bools_list):
+            # bools = [False, False]
+                returns = load_mst_data(date, mst_type=None, mst_mode=mst_mode, etf=True, benchmark=benchmark)
+                train, test = train_test_split(returns, train_size=0.3, shuffle=False)
+                # print_efficient_frontiers_graph(returns=train, title=f"{date} {mst_mode_print}",l2_reg=bools[0], min_weights=bools[1])
+                # print_correlation_heatmap(train, f"{date} etf_mst {mst_mode_print}  benchmark:{benchmark}")
+                out_sample, non_zero_weights, weights = optimize(
+                    train=train,
+                    test=test,
+                    l2_reg=bools[0],
+                    min_weights=bools[1],
+                    sector=sector,
+                    semivariance=semivariance,
+                    crypto_w=crypto_w
+                    )
 
-        DICT_ETF_MST[test_date][mst_mode_print].append({0: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
-            "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
-        if not benchmark:
-            write_markers_dict(out_sample, mst_mode, i)
+                DICT_ETF_MST[test_date][mst_mode_print].append({0: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
+                    "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
+                if not benchmark:
+                    write_markers_dict(out_sample, mst_mode, i)
 
-        write_variances_dict(semivariance, out_sample)
-        write_benches_dict(benchmark, out_sample)
+                write_variances_dict(semivariance, out_sample)
+                write_benches_dict(benchmark, out_sample)
+
+                increment()
 
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"etf_mst{semi_var_string}stats.json"
@@ -216,39 +226,41 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
     mst_mode = ''
     for index_date, date in enumerate(c.START_DATES):
         test_date = c.START_TEST_DATES[index_date]
-        for mst_type in c.MST_TYPES:
+        for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
             if benchmark and mst_type=="joint":
                 continue
-            # l = [False, True]
-            # bools_list = [list(i) for i in itertools.product(l, repeat=2)]
+            l = [False, True]
+            bools_list = [list(i) for i in itertools.product(l, repeat=2)]
             mst_mode_print = mst_mode or 'No SR filter'
             modes = f"{mst_type} {mst_mode_print}"
             print(f'{modes}')
             DICT_ETF_MST_CRYPTO_MST[test_date]['semi_variance'] = semivariance
             DICT_ETF_MST_CRYPTO_MST[test_date][modes]=[]
-            # for i, bools in enumerate(bools_list):
-            bools = [False, False]
-            returns = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, benchmark=benchmark)
-            train, test = train_test_split(returns, train_size=0.3, shuffle=False)
-            # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
-            # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst {mst_mode_print}  benchmark:{benchmark}")
-            out_sample, non_zero_weights, weights = optimize(
-                    train=train,
-                    test=test,
-                    l2_reg=bools[0],
-                    min_weights=bools[1],
-                    sector=sector,
-                    semivariance=semivariance,
-                    crypto_w=crypto_w
-                    )
-            DICT_ETF_MST_CRYPTO_MST[test_date][modes].append({i: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
-                "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
+            for i, bools in enumerate(bools_list):
+                # bools = [False, False]
+                returns = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, benchmark=benchmark)
+                train, test = train_test_split(returns, train_size=0.3, shuffle=False)
+                # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
+                # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst {mst_mode_print}  benchmark:{benchmark}")
+                out_sample, non_zero_weights, weights = optimize(
+                        train=train,
+                        test=test,
+                        l2_reg=bools[0],
+                        min_weights=bools[1],
+                        sector=sector,
+                        semivariance=semivariance,
+                        crypto_w=crypto_w
+                        )
+                DICT_ETF_MST_CRYPTO_MST[test_date][modes].append({i: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
+                    "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
 
-            write_markers_dict(out_sample, mst_mode, i)
-            write_variances_dict(semivariance, out_sample)
-            write_benches_dict(benchmark, out_sample)
-            if not benchmark:
-                write_mst_type_dict(mst_type=="joint", out_sample)
+                write_markers_dict(out_sample, mst_mode, i)
+                write_variances_dict(semivariance, out_sample)
+                write_benches_dict(benchmark, out_sample)
+                if not benchmark:
+                    write_mst_type_dict(mst_type=="joint", out_sample)
+
+                increment()
 
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"{1-crypto_w}_etf_mst_crypo_mst{semi_var_string}stats.json"
@@ -264,7 +276,7 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
     for index_date, date in enumerate(c.START_DATES):
         test_date = c.START_TEST_DATES[index_date]
         print(date)
-        for mst_type in c.MST_TYPES:
+        for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
             if benchmark and mst_type=="joint":
                 continue
             # l = [False, True]
@@ -276,13 +288,14 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
             DICT_ETF_MST_CRYPTO_MST_PASSIVE[test_date][modes]=[]
             # for i, bools in enumerate(bools_list):
             bools = [False, False]
-            returns = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, passive=True, benchmark=benchmark, dict_apy=DICT_CRYPTO_APY)
-            train, test = train_test_split(returns, train_size=0.3, shuffle=False)
+            returns, returns_apy = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, passive=True, benchmark=benchmark, dict_apy=DICT_CRYPTO_APY)
+            train, _ = train_test_split(returns, train_size=0.3, shuffle=False)
+            _, test_apy = train_test_split(returns_apy, train_size=0.3, shuffle=False)
             # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
             # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst_passive {mst_mode_print} benchmark:{benchmark} ")
             out_sample, non_zero_weights, weights = optimize(
                     train=train,
-                    test=test,
+                    test=test_apy,
                     l2_reg=bools[0],
                     min_weights=bools[1],
                     sector=sector,
@@ -298,6 +311,8 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
 
             if not benchmark:
                 write_mst_type_dict(mst_type=="joint", out_sample)
+
+            increment()
 
 
     semi_var_string = "_semi_" if semivariance else "_"
@@ -329,8 +344,10 @@ if __name__ == '__main__':
 
     # etf_benchmark()
 
-    # print_markers()
-    # print_stats_mst()
+    print_markers_inputs()
+    print_stats_inputs()
 
-    # print_markers_inputs()
-    # print_stats_inputs()
+    print_markers()
+    print_stats_mst()
+
+    print(f"{COUNTER_TESTS} number of portfolios tested.")
