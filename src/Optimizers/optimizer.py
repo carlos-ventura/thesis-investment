@@ -2,6 +2,7 @@ import collections
 import itertools
 import json
 from statistics import mean
+from turtle import write
 import plotly.graph_objects as go
 import plotly.io as pio
 
@@ -23,6 +24,12 @@ CHOSEN_NO_F = {i: {"sigmas": [], "mus": []} for i in range(4)}
 
 DICT_CRYPTO_APY = collections.defaultdict(dict)
 
+SEMI_VARIANCE = {'sigmas': [], "returns": []}
+VARIANCE = {'sigmas': [], "returns": []}
+
+BENCH = {'sigmas': [], "returns": []}
+NO_BENCH = {'sigmas': [], "returns": []}
+
 with open('../data/rates.json') as json_file:
     DICT_CRYPTO_APY = json.load(json_file)
 
@@ -32,6 +39,34 @@ def etf_benchmark():
         stats_benchmark_dict = benchmark_stats(returns_benchmark)
         DICT_BENCHMARK_STATS[date]['benchmark'] = stats_benchmark_dict
     write_json(DICT_BENCHMARK_STATS, "benchmark_stats.json")
+
+def write_variances_dict(semivariance, out_sample):
+    sigma = out_sample['efficient risk']['std'] / 100
+    mu = out_sample['efficient risk']['return'] / 100
+    if semivariance:
+        SEMI_VARIANCE['sigmas'].append(sigma)
+        SEMI_VARIANCE['returns'].append(mu)
+    else:
+        VARIANCE['sigmas'].append(sigma)
+        VARIANCE['returns'].append(mu)
+
+def write_benches_dict(benchmark, out_sample):
+    sigma = out_sample['efficient risk']['std'] / 100
+    mu = out_sample['efficient risk']['return'] / 100
+    if benchmark:
+        BENCH['sigmas'].append(sigma)
+        BENCH['returns'].append(mu)
+    else:
+        NO_BENCH['sigmas'].append(sigma)
+        NO_BENCH['returns'].append(mu)
+
+def print_var_semivar_stats():
+    print(f"VAR stats: SIGMA: {round(mean(VARIANCE['sigmas']) * 100, 2)} ::: Returns: {round(mean(VARIANCE['returns']) * 100, 2)}")
+    print(f"SEMIVAR stats: SIGMA: {round(mean(SEMI_VARIANCE['sigmas']) * 100, 2)} ::: Returns: {round(mean(SEMI_VARIANCE['returns']) * 100, 2)}")
+
+def print_benc_nobench_stats():
+    print(f"BENCHMARK stats: SIGMA: {round(mean(BENCH['sigmas']) * 100, 2)} ::: Returns: {round(mean(BENCH['returns']) * 100, 2)}")
+    print(f"OPT ETFs stats: SIGMA: {round(mean(NO_BENCH['sigmas']) * 100, 2)} ::: Returns: {round(mean(NO_BENCH['returns']) * 100, 2)}")
 
 def print_markers():
     f1 = go.Figure(
@@ -133,7 +168,7 @@ def etf_mst_optimizer(crypto_w:float, semivariance=False, benchmark=False):
             returns = load_mst_data(date, mst_type=None, mst_mode=mst_mode, etf=True, benchmark=benchmark)
             train, test = train_test_split(returns, train_size=0.3, shuffle=False)
             # print_efficient_frontiers_graph(returns=train, title=f"{date} {mst_mode_print}",l2_reg=bools[0], min_weights=bools[1])
-            # print_correlation_heatmap(test, f"{date} etf_mst {mst_mode_print}  benchmark:{benchmark}")
+            # print_correlation_heatmap(train, f"{date} etf_mst {mst_mode_print}  benchmark:{benchmark}")
             out_sample, non_zero_weights, weights = optimize(
                 train=train,
                 test=test,
@@ -149,6 +184,9 @@ def etf_mst_optimizer(crypto_w:float, semivariance=False, benchmark=False):
             if not benchmark:
                 write_markers_dict(out_sample, mst_mode, i)
 
+            write_variances_dict(semivariance, out_sample)
+            write_benches_dict(benchmark, out_sample)
+
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"etf_mst{semi_var_string}stats.json"
     if benchmark:
@@ -161,6 +199,8 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
     for index_date, date in enumerate(c.START_DATES):
         test_date = c.START_TEST_DATES[index_date]
         for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
+            if benchmark and mst_type =="joint":
+                continue
             # l = [False, True]
             # bools_list = [list(i) for i in itertools.product(l, repeat=2)]
             mst_mode_print = mst_mode or 'No SR filter'
@@ -172,8 +212,8 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
             bools = [False, False]
             returns = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, benchmark=benchmark)
             train, test = train_test_split(returns, train_size=0.3, shuffle=False)
-            print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
-            # print_correlation_heatmap(test, f"{date} etf_mst_crypto_mst {mst_mode_print}  benchmark:{benchmark}")
+            # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
+            # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst {mst_mode_print}  benchmark:{benchmark}")
             out_sample, non_zero_weights, weights = optimize(
                     train=train,
                     test=test,
@@ -187,6 +227,8 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
                 "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
 
             write_markers_dict(out_sample, mst_mode, i)
+            write_variances_dict(semivariance, out_sample)
+            write_benches_dict(benchmark, out_sample)
 
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"etf_mst_crypo_mst{semi_var_string}stats.json"
@@ -202,6 +244,8 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
         test_date = c.START_TEST_DATES[index_date]
         print(date)
         for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
+            if benchmark and mst_type =="joint":
+                continue
             # l = [False, True]
             # bools_list = [list(i) for i in itertools.product(l, repeat=2)]
             mst_mode_print = mst_mode or 'No SR filter'
@@ -213,8 +257,8 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
             bools = [False, False]
             returns = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, passive=True, benchmark=benchmark, dict_apy=DICT_CRYPTO_APY)
             train, test = train_test_split(returns, train_size=0.3, shuffle=False)
-            print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
-            # print_correlation_heatmap(test, f"{date} etf_mst_crypto_mst_passive {mst_mode_print} benchmark:{benchmark} ")
+            # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
+            # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst_passive {mst_mode_print} benchmark:{benchmark} ")
             out_sample, non_zero_weights, weights = optimize(
                     train=train,
                     test=test,
@@ -228,6 +272,8 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
                 "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
 
             write_markers_dict(out_sample, mst_mode, i)
+            write_variances_dict(semivariance, out_sample)
+            write_benches_dict(benchmark, out_sample)
 
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"etf_mst_crypo_mst{semi_var_string}passive_stats.json"
@@ -247,6 +293,9 @@ if __name__ == '__main__':
             etf_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
             etf_mst_crypto_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
             etf_mst_crypto_mst_apy_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
+
+    print_var_semivar_stats()
+    print_benc_nobench_stats()
 
     # etf_benchmark()
 
