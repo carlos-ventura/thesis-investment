@@ -30,6 +30,9 @@ VARIANCE = {'sigmas': [], "returns": []}
 BENCH = {'sigmas': [], "returns": []}
 NO_BENCH = {'sigmas': [], "returns": []}
 
+JOINT = {'sigmas': [], "returns": []}
+SEPARATE = {'sigmas': [], "returns": []}
+
 with open('../data/rates.json') as json_file:
     DICT_CRYPTO_APY = json.load(json_file)
 
@@ -59,6 +62,20 @@ def write_benches_dict(benchmark, out_sample):
     else:
         NO_BENCH['sigmas'].append(sigma)
         NO_BENCH['returns'].append(mu)
+
+def write_mst_type_dict(joint, out_sample):
+    sigma = out_sample['efficient risk']['std'] / 100
+    mu = out_sample['efficient risk']['return'] / 100
+    if joint:
+        JOINT['sigmas'].append(sigma)
+        JOINT['returns'].append(mu)
+    else:
+        SEPARATE['sigmas'].append(sigma)
+        SEPARATE['returns'].append(mu)
+
+def print_joint_separate_stats():
+    print(f"JOINT stats: SIGMA: {round(mean(JOINT['sigmas']) * 100, 2)} ::: Returns: {round(mean(JOINT['returns']) * 100, 2)}")
+    print(f"SEPARATE stats: SIGMA: {round(mean(SEPARATE['sigmas']) * 100, 2)} ::: Returns: {round(mean(SEPARATE['returns']) * 100, 2)}") 
 
 def print_var_semivar_stats():
     print(f"VAR stats: SIGMA: {round(mean(VARIANCE['sigmas']) * 100, 2)} ::: Returns: {round(mean(VARIANCE['returns']) * 100, 2)}")
@@ -230,6 +247,8 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
             write_markers_dict(out_sample, mst_mode, i)
             write_variances_dict(semivariance, out_sample)
             write_benches_dict(benchmark, out_sample)
+            if not benchmark:
+                write_mst_type_dict(mst_type=="joint", out_sample)
 
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"{1-crypto_w}_etf_mst_crypo_mst{semi_var_string}stats.json"
@@ -277,6 +296,10 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
             write_variances_dict(semivariance, out_sample)
             write_benches_dict(benchmark, out_sample)
 
+            if not benchmark:
+                write_mst_type_dict(mst_type=="joint", out_sample)
+
+
     semi_var_string = "_semi_" if semivariance else "_"
     filename =  f"{1-crypto_w}_etf_mst_crypo_mst{semi_var_string}passive_stats.json"
     if benchmark:
@@ -302,6 +325,7 @@ if __name__ == '__main__':
 
     print_var_semivar_stats()
     print_benc_nobench_stats()
+    print_joint_separate_stats()
 
     # etf_benchmark()
 
