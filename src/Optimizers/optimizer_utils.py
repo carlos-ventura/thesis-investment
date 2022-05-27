@@ -91,14 +91,14 @@ def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode, apy_dict:dict
     return returns
 
 
-def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean", benchmark = False, dict_apy = None):
+def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "min", benchmark = False, dict_apy = None):
     year = date.split('-', maxsplit=1)[0]
     path = '../data/mst/pickle/'
     mode_path = f'-{mst_mode}-' if mst_mode else '-'
     if mst_type == 'joint':
         returns_combined = pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
         if passive:
-            returns_combined = get_crypto_returns_passive(returns_combined, passive_mode, dict_apy)
+           return get_crypto_returns_passive(returns_combined, passive_mode, dict_apy)
         else:    
             return returns_combined
 
