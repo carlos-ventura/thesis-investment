@@ -2,6 +2,7 @@ import json
 import math
 from statistics import mean
 from matplotlib.pyplot import axis
+import numpy as np
 import pandas as pd
 from pypfopt import EfficientSemivariance, expected_returns, objective_functions, risk_models, plotting, HRPOpt
 from pypfopt.efficient_frontier import EfficientFrontier
@@ -10,6 +11,7 @@ import plotly_express as px
 from sklearn.model_selection import train_test_split
 import collections
 import empyrical as ep
+import plotly.io as pio
 
 import src.constants as c
 from src.utils import annualized_return, annualized_std, convert_annual_to_week
@@ -156,10 +158,11 @@ def optimizer_measures_weights(ef: EfficientFrontier, opt_mes:str, min_risk = c.
         return ef.efficient_risk(min_risk)
 
 def print_correlation_heatmap(returns:pd.DataFrame, title:str):
-    fig = px.imshow(returns.corr(), title=f"Heatmap Correlation : {title}")
+    fig = px.imshow(returns.corr(), title=title)
+    print(title, returns.corr().values[np.triu_indices_from(returns.corr().values,1)].mean())
     fig.show()
 
-def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, min_weights:bool):
+def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, min_weights:bool, crypto_w:float):
     asset_names = returns.columns.values
     crypto = []
     etf = []
@@ -172,25 +175,28 @@ def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool
     returns_crypto = returns[crypto]
     returns_etf = returns[etf]
 
-    # ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, min_weights=min_weights)
-    ef_etf = generate_ef(returns_etf, sector=True, l2_reg=l2_reg, min_weights=min_weights)
-    # ef_combined = generate_ef(returns, sector=False, l2_reg=l2_reg, min_weights=min_weights)
+    ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
+    ef_etf = generate_ef(returns_etf, sector=False, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
+    ef_combined = generate_ef(returns, sector=True, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
 
-    # _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
+    _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
     _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
-    # _, mus_combined , sigmas_combined, _ = plotting.plot_efficient_frontier(ef_combined, ef_param='return', show_assets=False)
+    _, mus_combined , sigmas_combined, _ = plotting.plot_efficient_frontier(ef_combined, ef_param='return', show_assets=False)
 
     f1 = go.Figure(
     data = [
-      #  go.Scatter(x=sigmas_crypto,y=mus_crypto, name='Efficient Frontier Crypto'),
+        go.Scatter(x=sigmas_crypto,y=mus_crypto, name='Efficient Frontier Crypto'),
         go.Scatter(x=sigmas_etf, y=mus_etf, name="Efficient Frontier ETF"),
-       # go.Scatter(x=sigmas_combined, y=mus_combined, name='Efficient Frontier Crypto + ETF'),
-        #go.Scatter(x=assets_crypto['sigmas'], y = assets_crypto['mus'], name='Cryptos', mode='markers'),
+        go.Scatter(x=sigmas_combined, y=mus_combined, name='Efficient Frontier Crypto + ETF'),
+        go.Scatter(x=assets_crypto['sigmas'], y = assets_crypto['mus'], name='Cryptos', mode='markers'),
         go.Scatter(x=assets_etf['sigmas'], y = assets_etf['mus'], name='ETFs', mode='markers'),
     ],
     layout = go.Layout(
     title=f"Comparison of Efficient Frontiers {title}",
-    xaxis=dict(title="Volatility"),
-    yaxis=dict(title="Return"))
+    xaxis=dict(title="Volatility", range=[-0.05, 0.2]),
+    yaxis=dict(title="Return", range=[-0.07, 0.4]))
     )   
     f1.show()
+
+    # pio.kaleido.scope.mathjax = None
+    # pio.write_image(f1, 'efficient_frontiers_unzommed.pdf')
