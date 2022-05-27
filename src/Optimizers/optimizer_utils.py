@@ -52,10 +52,10 @@ def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_re
     
     if semivariance:
         S = risk_models.semicovariance(returns, returns_data=True, frequency=52)
-        ef = EfficientSemivariance(mu, returns, verbose=verbose, solver="SCS", frequency=52, solver_options={"max_iters": 9999999})
+        ef = EfficientSemivariance(mu, returns, verbose=verbose, solver="SCS", frequency=52, solver_options={"max_iters": 99999999})
     else:
         S = risk_models.sample_cov(returns, returns_data=True, frequency=52)
-        ef = EfficientFrontier(mu, S, verbose=verbose, solver="SCS", solver_options={"max_iters": 999999})
+        ef = EfficientFrontier(mu, S, verbose=verbose, solver="SCS", solver_options={"max_iters": 99999999})
 
     sector_mapper = {asset: 'crypto' if '-USD' in asset else 'etf' for asset in returns.columns.values}
     if sector:
