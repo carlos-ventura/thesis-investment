@@ -98,7 +98,7 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
     if mst_type == 'joint':
         returns_combined = pd.read_pickle(f'{path}etf-crypto{mode_path}{year}.pkl')
         if passive:
-           return get_crypto_returns_passive(returns_combined, passive_mode, dict_apy)
+           return returns_combined, get_crypto_returns_passive(returns_combined, passive_mode, dict_apy)
         else:    
             return returns_combined
 
@@ -111,9 +111,10 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
         return returns_etf
     if crypto:
         returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
+        returns_combined = pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
         if passive:
-            return pd.concat([returns_etf , get_crypto_returns_passive(returns_crypto, passive_mode, dict_apy)], axis=1, join="inner") 
-        return pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
+            return returns_combined, pd.concat([returns_etf , get_crypto_returns_passive(returns_crypto, passive_mode, dict_apy)], axis=1, join="inner") 
+        return returns_combined
 
 def load_benchmark(date):
     year = date.split('-', maxsplit=1)[0]
