@@ -232,9 +232,9 @@ def etf_mst_crypto_mst_optimizer(crypto_w:float, semivariance=False, benchmark=F
             write_benches_dict(benchmark, out_sample)
 
     semi_var_string = "_semi_" if semivariance else "_"
-    filename =  f"etf_mst_crypo_mst{semi_var_string}stats.json"
+    filename =  f"{1-crypto_w}_etf_mst_crypo_mst{semi_var_string}stats.json"
     if benchmark:
-        filename = f"etf_bench_mst_crypo_mst{semi_var_string}stats.json"
+        filename = f"{1-crypto_w}_etf_bench_mst_crypo_mst{semi_var_string}stats.json"
 
     write_json(DICT_ETF_MST_CRYPTO_MST, filename)
 
@@ -278,9 +278,9 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
             write_benches_dict(benchmark, out_sample)
 
     semi_var_string = "_semi_" if semivariance else "_"
-    filename =  f"etf_mst_crypo_mst{semi_var_string}passive_stats.json"
+    filename =  f"{1-crypto_w}_etf_mst_crypo_mst{semi_var_string}passive_stats.json"
     if benchmark:
-        filename = f"etf_bench_mst_crypo_mst{semi_var_string}passive_stats.json"
+        filename = f"{1-crypto_w}_etf_bench_mst_crypo_mst{semi_var_string}passive_stats.json"
 
     write_json(DICT_ETF_MST_CRYPTO_MST_PASSIVE, filename)
 
@@ -292,9 +292,10 @@ if __name__ == '__main__':
         bools_list = [list(i) for i in itertools.product(l, repeat=2)]
 
         for bools in bools_list:
-            etf_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
+            if i == 0:
+                etf_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
             etf_mst_crypto_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
-            # etf_mst_crypto_mst_apy_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
+            etf_mst_crypto_mst_apy_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
             DICT_ETF_MST = collections.defaultdict(dict)
             DICT_ETF_MST_CRYPTO_MST = collections.defaultdict(dict)
             DICT_ETF_MST_CRYPTO_MST_PASSIVE = collections.defaultdict(dict)
