@@ -279,40 +279,40 @@ def etf_mst_crypto_mst_apy_optimizer(crypto_w:float, semivariance=False, benchma
         for mst_type, mst_mode in itertools.product(c.MST_TYPES, c.MST_MODES):
             if benchmark and mst_type=="joint":
                 continue
-            # l = [False, True]
-            # bools_list = [list(i) for i in itertools.product(l, repeat=2)]
+            l = [False, True]
+            bools_list = [list(i) for i in itertools.product(l, repeat=2)]
             mst_mode_print = mst_mode or 'No SR filter'
             modes = f"{mst_type} {mst_mode_print}"
             # print(f'{modes}')
             DICT_ETF_MST_CRYPTO_MST_PASSIVE[test_date]['semi_variance'] = semivariance
             DICT_ETF_MST_CRYPTO_MST_PASSIVE[test_date][modes]=[]
-            # for i, bools in enumerate(bools_list):
-            bools = [False, False]
-            returns, returns_apy = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, passive=True, benchmark=benchmark, dict_apy=DICT_CRYPTO_APY)
-            train, _ = train_test_split(returns, train_size=0.3, shuffle=False)
-            _, test_apy = train_test_split(returns_apy, train_size=0.3, shuffle=False)
-            # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
-            # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst_passive {mst_mode_print} benchmark:{benchmark} ")
-            out_sample, non_zero_weights, weights = optimize(
-                    train=train,
-                    test=test_apy,
-                    l2_reg=bools[0],
-                    min_weights=bools[1],
-                    sector=sector,
-                    semivariance=semivariance,
-                    crypto_w=crypto_w
-                    )
-            DICT_ETF_MST_CRYPTO_MST_PASSIVE[test_date][modes].append({i: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
-                "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
+            for i, bools in enumerate(bools_list):
+                # bools = [False, False]
+                returns, returns_apy = load_mst_data(date, mst_type, mst_mode, etf=True, crypto=True, passive=True, benchmark=benchmark, dict_apy=DICT_CRYPTO_APY)
+                train, _ = train_test_split(returns, train_size=0.3, shuffle=False)
+                _, test_apy = train_test_split(returns_apy, train_size=0.3, shuffle=False)
+                # print_efficient_frontiers_graph(train, title=f"{date} {modes}",l2_reg=bools[0], min_weights=bools[1], crypto_w=crypto_w)
+                # print_correlation_heatmap(train, f"{date} etf_mst_crypto_mst_passive {mst_mode_print} benchmark:{benchmark} ")
+                out_sample, non_zero_weights, weights = optimize(
+                        train=train,
+                        test=test_apy,
+                        l2_reg=bools[0],
+                        min_weights=bools[1],
+                        sector=sector,
+                        semivariance=semivariance,
+                        crypto_w=crypto_w
+                        )
+                DICT_ETF_MST_CRYPTO_MST_PASSIVE[test_date][modes].append({i: {"nr_weights": len(non_zero_weights), "nr_0_weights": len(weights) - len(non_zero_weights),
+                    "weights": non_zero_weights,"l2_reg": bools[0], "min_weights": bools[1], "test": out_sample }})
 
-            write_markers_dict(out_sample, mst_mode, i)
-            write_variances_dict(semivariance, out_sample)
-            write_benches_dict(benchmark, out_sample)
+                write_markers_dict(out_sample, mst_mode, i)
+                write_variances_dict(semivariance, out_sample)
+                write_benches_dict(benchmark, out_sample)
 
-            if not benchmark:
-                write_mst_type_dict(mst_type=="joint", out_sample)
+                if not benchmark:
+                    write_mst_type_dict(mst_type=="joint", out_sample)
 
-            increment()
+                increment()
 
 
     semi_var_string = "_semi_" if semivariance else "_"
@@ -331,9 +331,9 @@ if __name__ == '__main__':
 
         for bools in bools_list:
             if i == 0:
-                etf_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
-            etf_mst_crypto_mst_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
-            etf_mst_crypto_mst_apy_optimizer(semivariance=bools[0], benchmark=bools[1], crypto_w=crypto_w[i])
+                etf_mst_optimizer(semivariance=bools[1], benchmark=bools[0], crypto_w=crypto_w[i])
+            etf_mst_crypto_mst_optimizer(semivariance=bools[1], benchmark=bools[0], crypto_w=crypto_w[i])
+            etf_mst_crypto_mst_apy_optimizer(semivariance=bools[1], benchmark=bools[0], crypto_w=crypto_w[i])
             DICT_ETF_MST = collections.defaultdict(dict)
             DICT_ETF_MST_CRYPTO_MST = collections.defaultdict(dict)
             DICT_ETF_MST_CRYPTO_MST_PASSIVE = collections.defaultdict(dict)
