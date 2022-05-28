@@ -15,14 +15,14 @@ START_TEST_DATES = ['2019-03-11', '2020-03-23']
 #START_TEST_DATES = ['2019-03-11']
 #START_TEST_DATES = ['2020-03-23']
 
-MST_MODES = ['']#, 'sr0', 'sr1']
-MST_TYPES = ['separate'] # 'joint', 
+MST_MODES = ['', 'sr0', 'sr1']
+MST_TYPES = ['joint', 'separate'] # 'joint', 
 
 OPTIMIZER_MEASURES = ['min volatility','efficient risk'] # efficient risk, min volatility
 
 MODEL_INPUTS = ['Empty', 'Min w', "Penalty", "Min w and Penalty"]
 
-PASSIVE_MODES = ["min", "mean", "max"]
+PASSIVE_MODES = ["min", "mean"]
 
 MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
