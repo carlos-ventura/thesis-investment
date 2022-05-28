@@ -83,16 +83,16 @@ def write_mst_type_dict(joint, out_sample):
         SEPARATE['returns'].append(mu)
 
 def print_joint_separate_stats():
-    print(f"JOINT stats: SIGMA: {round(mean(JOINT['sigmas']) * 100, 2)} ::: Returns: {round(mean(JOINT['returns']) * 100, 2)}")
-    print(f"SEPARATE stats: SIGMA: {round(mean(SEPARATE['sigmas']) * 100, 2)} ::: Returns: {round(mean(SEPARATE['returns']) * 100, 2)}") 
+    print(f"JOINT stats: Returns: {round(mean(JOINT['returns']) * 100, 2)} ::: SIGMA: {round(mean(JOINT['sigmas']) * 100, 2)} ")
+    print(f"SEPARATE stats: Returns: {round(mean(SEPARATE['returns']) * 100, 2)} ::: SIGMA: {round(mean(SEPARATE['sigmas']) * 100, 2)}") 
 
 def print_var_semivar_stats():
-    print(f"VAR stats: SIGMA: {round(mean(VARIANCE['sigmas']) * 100, 2)} ::: Returns: {round(mean(VARIANCE['returns']) * 100, 2)}")
-    print(f"SEMIVAR stats: SIGMA: {round(mean(SEMI_VARIANCE['sigmas']) * 100, 2)} ::: Returns: {round(mean(SEMI_VARIANCE['returns']) * 100, 2)}")
+    print(f"VAR stats: Returns: {round(mean(VARIANCE['returns']) * 100, 2)} ::: SIGMA: {round(mean(VARIANCE['sigmas']) * 100, 2)}")
+    print(f"SEMIVAR stats: Returns: {round(mean(SEMI_VARIANCE['returns']) * 100, 2)} ::: SIGMA: {round(mean(SEMI_VARIANCE['sigmas']) * 100, 2)}")
 
 def print_benc_nobench_stats():
-    print(f"BENCHMARK stats: SIGMA: {round(mean(BENCH['sigmas']) * 100, 2)} ::: Returns: {round(mean(BENCH['returns']) * 100, 2)}")
-    print(f"OPT ETFs stats: SIGMA: {round(mean(NO_BENCH['sigmas']) * 100, 2)} ::: Returns: {round(mean(NO_BENCH['returns']) * 100, 2)}")
+    print(f"BENCHMARK stats: Returns: {round(mean(BENCH['returns']) * 100, 2)} ::: SIGMA: {round(mean(BENCH['sigmas']) * 100, 2)}")
+    print(f"OPT ETFs stats: Returns: {round(mean(NO_BENCH['returns']) * 100, 2)} ::: SIGMA: {round(mean(NO_BENCH['sigmas']) * 100, 2)}")
 
 def print_markers():
     f1 = go.Figure(
@@ -165,10 +165,10 @@ def print_stats_inputs():
     returns_min_w_pen.extend(NOT_CHOSEN_SR0[3]['mus'])
     returns_min_w_pen.extend(NOT_CHOSEN_SR1[3]['mus'])
 
-    print(f"{c.MODEL_INPUTS[0]} stats: SIGMA: {round(mean(sigmas_empty) * 100, 2)} ::: Returns: {round(mean(returns_empty) * 100, 2)}")
-    print(f"{c.MODEL_INPUTS[1]} stats: SIGMA: {round(mean(sigmas_min_w) * 100, 2)} ::: Returns: {round(mean(returns_min_w) * 100, 2)}")
-    print(f"{c.MODEL_INPUTS[2]} stats: SIGMA: {round(mean(sigmas_pen) * 100, 2)} ::: Returns: {round(mean(returns_pen) * 100, 2)}")
-    print(f"{c.MODEL_INPUTS[3]} stats: SIGMA: {round(mean(sigmas_min_w_pen) * 100, 2)} ::: Returns: {round(mean(returns_min_w_pen) * 100, 2)}")
+    print(f"{c.MODEL_INPUTS[0]} stats: Returns: {round(mean(returns_empty) * 100, 2)} ::: SIGMA: {round(mean(sigmas_empty) * 100, 2)}")
+    print(f"{c.MODEL_INPUTS[1]} stats: Returns: {round(mean(returns_min_w) * 100, 2)} ::: SIGMA: {round(mean(sigmas_min_w) * 100, 2)}")
+    print(f"{c.MODEL_INPUTS[2]} stats: Returns: {round(mean(returns_pen) * 100, 2)} ::: SIGMA: {round(mean(sigmas_pen) * 100, 2)}")
+    print(f"{c.MODEL_INPUTS[3]} stats: Returns: {round(mean(returns_min_w_pen) * 100, 2)} ::: SIGMA: {round(mean(sigmas_min_w_pen) * 100, 2)}")
 
 def print_stats_mst():
     sigmas_nof = NO_F['sigmas']
@@ -177,9 +177,9 @@ def print_stats_mst():
     returns_sr0 = SR0_F['mus']
     sigmas_sr1 = SR1_F['sigmas']
     returns_sr1 = SR1_F['mus']
-    print(f"No filter stats: SIGMA: {round(mean(sigmas_nof) * 100, 2)} ::: Returns: {round(mean(returns_nof) * 100, 2)}")
-    print(f"Sr0 filter stats: SIGMA: {round(mean(sigmas_sr0) * 100, 2)} ::: Returns: {round(mean(returns_sr0) * 100, 2)}")
-    print(f"Sr1 filter stats: SIGMA: {round(mean(sigmas_sr1) * 100, 2)} ::: Returns: {round(mean(returns_sr1) * 100, 2)}")
+    print(f"No filter stats: Returns: {round(mean(returns_nof) * 100, 2)} ::: SIGMA: {round(mean(sigmas_nof) * 100, 2)}")
+    print(f"Sr0 filter stats: Returns: {round(mean(returns_sr0) * 100, 2)} ::: SIGMA: {round(mean(sigmas_sr0) * 100, 2)}")
+    print(f"Sr1 filter stats: Returns: {round(mean(returns_sr1) * 100, 2)} ::: SIGMA: {round(mean(sigmas_sr1) * 100, 2)}")
 
 def write_markers_dict(out_sample:dict, mst_mode:str, i:str):
     sigma = out_sample['efficient risk']['std'] / 100
