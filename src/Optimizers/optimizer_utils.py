@@ -43,7 +43,12 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     ef_test.set_weights(weights)
     mu_test, _ , _ = ef_test.portfolio_performance(verbose=True)
 
-    out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)}
+
+    mu_test = round(mu_test * 100, 2)
+    sigma_test = round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)
+    down_sigma_test = round(float(ep.downside_risk(port_returns, period="weekly")) * 100, 2)
+
+    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test}
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
