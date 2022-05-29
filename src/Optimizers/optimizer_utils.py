@@ -33,21 +33,21 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
-    print(non_zero_weights)
+    # print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-    port_returns = pd.Series(weights) * test
-    port_returns = port_returns.sum(axis=1).to_frame()
+    port_evolution = generate_portfolio(test, cleaned_weights, 100)
 
     ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
-    mu_test, _ , _ = ef_test.portfolio_performance(verbose=True)
+    mu_test, _ , _ = ef_test.portfolio_performance()
 
 
-    mu_test = round(mu_test * 100, 2)
-    sigma_test = round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)
-    down_sigma_test = round(float(ep.downside_risk(port_returns, period="weekly")) * 100, 2)
-    mdd_test = round(float(ep.max_drawdown(port_returns)) * 100, 2)
+    # mu_test = round(mu_test * 100, 2)
+    mu_test = round(float(ep.annual_return(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
+    sigma_test = round(float(ep.annual_volatility(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
+    down_sigma_test = round(float(ep.downside_risk(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
+    mdd_test = round(float(ep.max_drawdown(port_evolution.pct_change()[1:])) * 100, 2)
 
     out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}
 
