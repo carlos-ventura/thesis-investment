@@ -22,7 +22,7 @@ OPTIMIZER_MEASURES = ['min volatility','efficient risk'] # efficient risk, min v
 
 MODEL_INPUTS = ['Empty', 'Min w', "Penalty", "Min w and Penalty"]
 
-PASSIVE_MODES = ["min", "mean"]
+PASSIVE_MODES = ["min", "mean", "max"]
 
 MINIMUM_DAILY_VOLUME = 2000000 # Dollars
 MAXIMUM_EXPENSE_RATIO = 0.005
