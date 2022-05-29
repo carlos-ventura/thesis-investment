@@ -45,7 +45,7 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
 
     out_sample_dict[risk_measure] = {'return': round(mu_test * 100, 2), 'std': round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)}
 
-    return out_sample_dict, non_zero_weights, weights
+    return out_sample_dict, non_zero_weights, cleaned_weights
 
 def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
@@ -201,3 +201,14 @@ def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool
 
     # pio.kaleido.scope.mathjax = None
     # pio.write_image(f1, 'efficient_frontiers_unzommed.pdf')
+
+def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:float):
+    first_date = returns.index.values[0] - np.timedelta64(7,'D')
+    cum_returns = (1 + returns).cumprod() - 1
+    weights_series = pd.Series(weights)
+    port_evolution = (cum_returns + 1) * (weights_series * money_investment)
+    port_evolution = port_evolution.sum(axis=1)
+    port_evolution.loc[first_date] = money_investment
+    port_evolution.sort_index(inplace=True)
+
+    return port_evolution
