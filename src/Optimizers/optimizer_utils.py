@@ -33,7 +33,7 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
-    # print(non_zero_weights)
+    print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
     port_evolution = generate_portfolio(test, cleaned_weights, 100)
@@ -49,7 +49,7 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     down_sigma_test = round(float(ep.downside_risk(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
     mdd_test = round(float(ep.max_drawdown(port_evolution.pct_change()[1:])) * 100, 2)
 
-    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}
+    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test, 'weights': non_zero_weights}
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
@@ -97,7 +97,7 @@ def get_crypto_returns_passive(returns:pd.DataFrame, passive_mode, apy_dict:dict
     return returns
 
 
-def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, passive_mode = "mean", benchmark = False, dict_apy = None):
+def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, passive=False, top=False, stable=False, passive_mode = "mean", benchmark = False, dict_apy = None):
     year = date.split('-', maxsplit=1)[0]
     path = '../data/mst/pickle/'
     mode_path = f'-{mst_mode}-' if mst_mode else '-'
@@ -116,7 +116,14 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
     if etf and not crypto:
         return returns_etf
     if crypto:
-        returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
+        if top:
+            returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}top30-{year}.pkl')
+        if stable:
+            returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}top10-stable-{year}.pkl')
+            if year == "2017":
+                returns_crypto.columns = ['USDT-USD']
+        else:
+            returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}{year}.pkl')
         returns_combined = pd.concat([returns_etf, returns_crypto], axis=1, join='inner')
         if passive:
             return returns_combined, pd.concat([returns_etf , get_crypto_returns_passive(returns_crypto, passive_mode, dict_apy)], axis=1, join="inner") 
