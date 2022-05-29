@@ -2,8 +2,6 @@ import collections
 import itertools
 import json
 from statistics import mean
-from turtle import write
-from typing import Counter
 import plotly.graph_objects as go
 import plotly.io as pio
 
