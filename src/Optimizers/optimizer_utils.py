@@ -47,8 +47,9 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     mu_test = round(mu_test * 100, 2)
     sigma_test = round(float(ep.annual_volatility(port_returns, period="weekly")) * 100, 2)
     down_sigma_test = round(float(ep.downside_risk(port_returns, period="weekly")) * 100, 2)
+    mdd_test = ep.max_drawdown(port_returns)
 
-    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test}
+    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
