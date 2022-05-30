@@ -40,16 +40,17 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
 
     ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
-    mu_test, _ , _ = ef_test.portfolio_performance()
+    marko_return, _ , _ = ef_test.portfolio_performance()
 
+    marko_return, marko_sigma = markowitz_stats(test, weights)
 
-    # mu_test = round(mu_test * 100, 2)
     mu_test = round(float(ep.annual_return(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
     sigma_test = round(float(ep.annual_volatility(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
     down_sigma_test = round(float(ep.downside_risk(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
     mdd_test = round(float(ep.max_drawdown(port_evolution.pct_change()[1:])) * 100, 2)
 
-    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test, 'weights': non_zero_weights}
+    out_sample_dict[risk_measure] = {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test,
+    'marko return': marko_return, 'marko sigma': marko_sigma, 'weights': non_zero_weights}
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
@@ -234,3 +235,9 @@ def generate_portfolio_stats(portfolio:pd.DataFrame):
     mdd_test = round(float(ep.max_drawdown(portfolio.pct_change()[1:])) * 100, 2)
 
     return {'efficient risk': {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}}
+
+def markowitz_stats(returns:pd.DataFrame, weights:dict):
+    marko_return = sum(annualized_return(returns[key]) * value for key, value in weights.items())
+    marko_sigma = ep.annual_volatility((returns * pd.Series(weights)).sum(axis=1), period="weekly")
+
+    return marko_return, marko_sigma
