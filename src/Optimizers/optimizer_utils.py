@@ -220,6 +220,7 @@ def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:floa
     cum_returns = (1 + returns).cumprod() - 1
     weights_series = pd.Series(weights)
     port_evolution = (cum_returns + 1) * (weights_series * money_investment)
+    port_evolution.dropna(axis=1, how='all', inplace=True)
     port_evolution = port_evolution.sum(axis=1)
     port_evolution.loc[first_date] = money_investment
     port_evolution.sort_index(inplace=True)
