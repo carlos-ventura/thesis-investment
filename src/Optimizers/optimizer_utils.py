@@ -226,3 +226,11 @@ def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:floa
     port_evolution.sort_index(inplace=True)
 
     return port_evolution
+
+def generate_portfolio_stats(portfolio:pd.DataFrame):
+    mu_test = round(float(ep.annual_return(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
+    sigma_test = round(float(ep.annual_volatility(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
+    down_sigma_test = round(float(ep.downside_risk(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
+    mdd_test = round(float(ep.max_drawdown(portfolio.pct_change()[1:])) * 100, 2)
+
+    return {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}
