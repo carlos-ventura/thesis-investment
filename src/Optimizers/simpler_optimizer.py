@@ -63,7 +63,7 @@ def etf_mst_crypto_mst_apy_optimizer(date:str, crypto_w:float, passive_mode="mea
     )
     return generate_portfolio(test_apy, weights, MONEY_INVESTMENT), out_sample
 
-def opt_mst():
+def helper_optimize(title:str, top=False, stable=False):
     for date, i in itertools.product(c.START_DATES, range(2)):
         portfolios_stats = {f"{date}{crypto_w[i]}": {}}
         portfolios:pd.DataFrame = pd.DataFrame()
@@ -71,11 +71,12 @@ def opt_mst():
 
         portfolios['ETF'], out_sample = etf_mst_optimizer(date=date, crypto_w=crypto_w[i])
         portfolios_stats[f"{date}{crypto_w[i]}"]['ETF'] = out_sample['efficient risk']
-        portfolios['ETF+OptCrypto'], out_sample = etf_mst_crypto_mst_optimizer(date=date, crypto_w=crypto_w[i])
+        portfolios['ETF+OptCrypto'], out_sample = etf_mst_crypto_mst_optimizer(date=date, crypto_w=crypto_w[i], top=top, stable=stable)
         portfolios_stats[f"{date}{crypto_w[i]}"]['ETF+OptCrypto'] = out_sample['efficient risk']
 
         for passive_mode in c.PASSIVE_MODES:
-            portfolios[f'ETF+OptCrypto+Apy({passive_mode})'], out_sample = etf_mst_crypto_mst_apy_optimizer(date=date, crypto_w=crypto_w[i], passive_mode=passive_mode)
+            portfolios[f'ETF+OptCrypto+Apy({passive_mode})'], out_sample = etf_mst_crypto_mst_apy_optimizer(
+                date=date, crypto_w=crypto_w[i], passive_mode=passive_mode, top=top, stable=stable)
             portfolios_stats[f"{date}{crypto_w[i]}"][f'ETF+OptCrypto+Apy({passive_mode})'] = out_sample['efficient risk']
         fig = px.line(portfolios, title=f'Portfolios comparison {date} ({crypto_w[i]} crypto)',
             labels={'value': 'Portfolio evolution', 'variable': 'Portfolio style'})
@@ -83,62 +84,25 @@ def opt_mst():
         # fig.show()
         # pio.kaleido.scope.mathjax = None
         # pio.write_image(fig, f'{date}-{crypto_w[i]}-performance.pdf', width=700, height=500)
-        write_json(portfolios_stats, f"{date}-{crypto_w[i]}-opt-stats.json",)
+        write_json(portfolios_stats, f"{date}-{crypto_w[i]}-{title}-stats.json",)
+
+def opt_mst():
+    helper_optimize(title='opt-mst')
 
 def opt_top():
-    for date, i in itertools.product(c.START_DATES, range(2)):
-        portfolios_stats = {f"{date}{crypto_w[i]}": {}}
-        portfolios:pd.DataFrame = pd.DataFrame()
-        print(f"\n Optimiser for {crypto_w[i]} crypto and {1-crypto_w[i]} etfs\n")
-
-        portfolios['ETF'], out_sample = etf_mst_optimizer(date=date, crypto_w=crypto_w[i])
-        portfolios_stats[f"{date}{crypto_w[i]}"]['ETF'] = out_sample['efficient risk']
-        portfolios['ETF+OptCrypto'], out_sample=etf_mst_crypto_mst_optimizer(date=date, crypto_w=crypto_w[i], top=True)
-        portfolios_stats[f"{date}{crypto_w[i]}"]['ETF+OptCrypto'] = out_sample['efficient risk']
-
-        for passive_mode in c.PASSIVE_MODES:
-            portfolios[f'ETF+OptCrypto+Apy({passive_mode})'], out_sample = etf_mst_crypto_mst_apy_optimizer(
-                date=date, crypto_w=crypto_w[i], passive_mode=passive_mode, top=True)
-            portfolios_stats[f"{date}{crypto_w[i]}"][f'ETF+OptCrypto+Apy({passive_mode})'] = out_sample['efficient risk']
-        fig = px.line(portfolios, title=f'Portfolios comparison {date} ({crypto_w[i]} crypto)',
-            labels={'value': 'Portfolio evolution', 'variable': 'Portfolio style'})
-
-        # fig.show()
-        # pio.kaleido.scope.mathjax = None
-        # pio.write_image(fig, f'{date}-{crypto_w[i]}-performance.pdf', width=700, height=500)
-        write_json(portfolios_stats, f"{date}-{crypto_w[i]}-opt-top-stats.json",)
+    helper_optimize(title='opt-top', top=True)
 
 def opt_stable():
-    for date, i in itertools.product(c.START_DATES, range(2)):
-        portfolios_stats = {f"{date}{crypto_w[i]}": {}}
-        portfolios:pd.DataFrame = pd.DataFrame()
-        print(f"\n Optimiser for {crypto_w[i]} crypto and {1-crypto_w[i]} etfs\n")
-
-        portfolios['ETF'], out_sample = etf_mst_optimizer(date=date, crypto_w=crypto_w[i])
-        portfolios_stats[f"{date}{crypto_w[i]}"]['ETF'] = out_sample['efficient risk']
-        portfolios['ETF+OptCrypto'], out_sample=etf_mst_crypto_mst_optimizer(date=date, crypto_w=crypto_w[i], stable=True)
-        portfolios_stats[f"{date}{crypto_w[i]}"]['ETF+OptCrypto'] = out_sample['efficient risk']
-
-        for passive_mode in c.PASSIVE_MODES:
-            portfolios[f'ETF+OptCrypto+Apy({passive_mode})'], out_sample = etf_mst_crypto_mst_apy_optimizer(
-                date=date, crypto_w=crypto_w[i], passive_mode=passive_mode, stable=True)
-            portfolios_stats[f"{date}{crypto_w[i]}"][f'ETF+OptCrypto+Apy({passive_mode})'] = out_sample['efficient risk']
-        fig = px.line(portfolios, title=f'Portfolios comparison {date} ({crypto_w[i]} crypto)',
-            labels={'value': 'Portfolio evolution', 'variable': 'Portfolio style'})
-
-        fig.show()
-        # pio.kaleido.scope.mathjax = None
-        # pio.write_image(fig, f'{date}-{crypto_w[i]}-performance.pdf', width=700, height=500)
-        write_json(portfolios_stats, f"{date}-{crypto_w[i]}-opt-stable-stats.json")
+    helper_optimize(title="opt-stable", stable=True)
 
 def weighted_top():
     pass
 
 import itertools
 if __name__ == '__main__':
-    # opt_mst()
-    # opt_top()
-    # opt_stable()
-    weighted_top()
+    opt_mst()
+    opt_top()
+    opt_stable()
+    # weighted_top()
 
 
