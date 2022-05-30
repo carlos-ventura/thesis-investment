@@ -109,7 +109,7 @@ def helper_weighted(assets:int, date:str, crypto_w:float, passive=False, passive
         top_cryptos = crypto_top_file.read().split('\n')
 
     if isinstance(assets, int):
-        top_cryptos[:assets]
+        top_cryptos = top_cryptos[:assets]
 
     equal_w = crypto_w / len(top_cryptos)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     weighted_top(2)
     weighted_top(3)
     weighted_top(5)
-    weighted_top(10)
-    weighted_top("all")
+    # weighted_top(10)
+    # weighted_top("all")
 
 
