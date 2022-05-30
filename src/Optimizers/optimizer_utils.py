@@ -118,7 +118,7 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
     if crypto:
         if top:
             returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}top30-{year}.pkl')
-        if stable:
+        elif stable:
             returns_crypto = pd.read_pickle(f'{path}crypto{mode_path}top10-stable-{year}.pkl')
             if year == "2017":
                 returns_crypto.columns = ['USDT-USD']
