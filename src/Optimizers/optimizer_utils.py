@@ -237,7 +237,7 @@ def generate_portfolio_stats(portfolio:pd.DataFrame):
     return {'efficient risk': {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}}
 
 def markowitz_stats(returns:pd.DataFrame, weights:dict):
-    marko_return = sum(annualized_return(returns[key]) * value for key, value in weights.items())
-    marko_sigma = ep.annual_volatility((returns * pd.Series(weights)).sum(axis=1), period="weekly")
+    marko_return = round(sum(annualized_return(returns[key]) * value for key, value in weights.items()) * 100, 2)
+    marko_sigma = round(ep.annual_volatility((returns * pd.Series(weights)).sum(axis=1), period="weekly") * 100, 2)
 
     return marko_return, marko_sigma
