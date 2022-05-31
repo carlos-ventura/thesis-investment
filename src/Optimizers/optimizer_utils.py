@@ -33,12 +33,12 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
     
-    print(non_zero_weights)
+    # print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
     ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
-    ef_test.portfolio_performance(verbose=True)
+    # ef_test.portfolio_performance(verbose=True)
 
     port_evolution = generate_portfolio(test, cleaned_weights, 100, rebalance)
     out_sample_dict = generate_portfolio_stats(port_evolution)
