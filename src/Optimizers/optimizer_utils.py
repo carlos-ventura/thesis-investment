@@ -1,10 +1,9 @@
 import json
 import math
 from statistics import mean
-from matplotlib.pyplot import axis
 import numpy as np
 import pandas as pd
-from pypfopt import EfficientSemivariance, expected_returns, objective_functions, risk_models, plotting, HRPOpt
+from pypfopt import EfficientSemivariance, expected_returns, objective_functions, risk_models, plotting
 from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 import plotly_express as px
@@ -16,7 +15,7 @@ import plotly.io as pio
 import src.constants as c
 from src.utils import annualized_return, annualized_std, convert_annual_to_week
 
-def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, sector=False, semivariance=False):
+def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, sector=False, semivariance=False, rebalance=52):
     min_var_measure = c.OPTIMIZER_MEASURES[0]
     risk_measure = c.OPTIMIZER_MEASURES[1]
     out_sample_dict = collections.defaultdict(dict)
@@ -33,24 +32,18 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
+    
     print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-    port_evolution = generate_portfolio(test, cleaned_weights, 100)
-
     ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
-    marko_return, _ , _ = ef_test.portfolio_performance()
+    ef_test.portfolio_performance(verbose=True)
 
-    marko_return, marko_sigma = markowitz_stats(test, weights)
+    port_evolution = generate_portfolio(test, cleaned_weights, 100, rebalance)
+    out_sample_dict = generate_portfolio_stats(port_evolution)
 
-    mu_test = round(float(ep.annual_return(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
-    sigma_test = round(float(ep.annual_volatility(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
-    down_sigma_test = round(float(ep.downside_risk(port_evolution.pct_change()[1:], period="weekly")) * 100, 2)
-    mdd_test = round(float(ep.max_drawdown(port_evolution.pct_change()[1:])) * 100, 2)
-
-    out_sample_dict[risk_measure] = {'return': mu_test, 'marko return': marko_return, 'std': sigma_test, 'marko std': marko_sigma,
-     'down_std': down_sigma_test, 'mdd': mdd_test, 'weights': non_zero_weights}
+    out_sample_dict[risk_measure]['weights'] = non_zero_weights
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
@@ -216,17 +209,25 @@ def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool
     # pio.kaleido.scope.mathjax = None
     # pio.write_image(f1, 'efficient_frontiers_unzommed.pdf')
 
-def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:float):
-    first_date = returns.index.values[0] - np.timedelta64(7,'D')
-    cum_returns = (1 + returns).cumprod() - 1
-    weights_series = pd.Series(weights)
-    port_evolution = (cum_returns + 1) * (weights_series * money_investment)
-    port_evolution.dropna(axis=1, how='all', inplace=True)
-    port_evolution = port_evolution.sum(axis=1)
-    port_evolution.loc[first_date] = money_investment
-    port_evolution.sort_index(inplace=True)
+def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:float, rebalance:float):
 
-    return port_evolution
+    list_df = [returns[i:i+rebalance] for i in range(0,returns.shape[0],rebalance)]
+    final_port_evolution = pd.DataFrame()
+
+    for df in list_df:
+        cum_df = (1 + df).cumprod() - 1
+        weights_series = pd.Series(weights)
+        port_evolution = (cum_df + 1) * (weights_series * money_investment)
+        port_evolution.dropna(axis=1, how='all', inplace=True)
+        port_evolution = port_evolution.sum(axis=1)
+        if money_investment == 100:
+            first_date = df.index.values[0] - np.timedelta64(7,'D')
+            port_evolution.loc[first_date] = money_investment
+            port_evolution.sort_index(inplace=True)
+        money_investment = port_evolution.iloc[-1]
+        final_port_evolution = pd.concat([final_port_evolution, port_evolution])
+
+    return final_port_evolution
 
 def generate_portfolio_stats(portfolio:pd.DataFrame):
     mu_test = round(float(ep.annual_return(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
@@ -235,9 +236,3 @@ def generate_portfolio_stats(portfolio:pd.DataFrame):
     mdd_test = round(float(ep.max_drawdown(portfolio.pct_change()[1:])) * 100, 2)
 
     return {'efficient risk': {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}}
-
-def markowitz_stats(returns:pd.DataFrame, weights:dict):
-    marko_return = round(sum(annualized_return(returns[key]) * value for key, value in weights.items()) * 100, 2)
-    marko_sigma = round(ep.annual_volatility((returns * pd.Series(weights)).sum(axis=1), period="weekly") * 100, 2)
-
-    return marko_return, marko_sigma
