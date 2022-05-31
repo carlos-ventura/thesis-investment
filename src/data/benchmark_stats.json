@@ -28,35 +28,5 @@
                 }
             }
         }
-    },
-    "2019-05-01": {
-        "benchmark": {
-            "individual": {
-                "IWDA.AS": {
-                    "test": {
-                        "return": 30.67,
-                        "std": 14.62
-                    }
-                },
-                "ACWI": {
-                    "test": {
-                        "return": 29.05,
-                        "std": 18.84
-                    }
-                },
-                "VWCE.DE": {
-                    "test": {
-                        "return": 28.89,
-                        "std": 14.21
-                    }
-                }
-            },
-            "average": {
-                "test": {
-                    "return": 0.3,
-                    "std": 0.16
-                }
-            }
-        }
     }
 }
