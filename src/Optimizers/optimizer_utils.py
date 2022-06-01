@@ -15,20 +15,20 @@ import plotly.io as pio
 import src.constants as c
 from src.utils import annualized_return, annualized_std, convert_annual_to_week
 
-def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, sector=False, semivariance=False, rebalance=52):
+def optimize(train, test, crypto_w:float, l2_reg=False, max_weights=False, sector=False, semivariance=False, rebalance=52):
     min_var_measure = c.OPTIMIZER_MEASURES[0]
     risk_measure = c.OPTIMIZER_MEASURES[1]
     out_sample_dict = collections.defaultdict(dict)
 
     # Calculate real min variance and compare with benchmark risk
 
-    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, max_weights=max_weights, semivariance=semivariance, crypto_w=crypto_w)
     _ = optimizer_measures_weights(ef_train, min_var_measure, semivariance=semivariance)
     _, sigma_train, _= ef_train.portfolio_performance()
 
     min_risk = sigma_train + 0.0001 if sigma_train > c.BENCHMARK_RISK else c.BENCHMARK_RISK
 
-    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
+    ef_train = generate_ef(train, sector=sector, l2_reg=l2_reg, l2_value=0.1, max_weights=max_weights, semivariance=semivariance, crypto_w=crypto_w)
     weights = optimizer_measures_weights(ef_train, risk_measure, min_risk)
     cleaned_weights = ef_train.clean_weights()
     non_zero_weights = {x:y for x,y in cleaned_weights.items() if y!=0}
@@ -39,7 +39,7 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
     # print(non_zero_weights)
     print("Total weights: ", len(cleaned_weights), " :::  Weights not used: ", len(cleaned_weights) - len(non_zero_weights))
 
-    ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, min_weights=min_weights, semivariance=semivariance, crypto_w=crypto_w)
+    ef_test = generate_ef(test, sector=sector, l2_reg=l2_reg, l2_value=0.1, max_weights=max_weights, semivariance=semivariance, crypto_w=crypto_w)
     ef_test.set_weights(weights)
     # ef_test.portfolio_performance(verbose=True)
 
@@ -53,9 +53,9 @@ def optimize(train, test, crypto_w:float, l2_reg=False, min_weights=False, secto
 
     return out_sample_dict, non_zero_weights, cleaned_weights
 
-def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_reg = False, min_weights = False, l2_value=0.1, verbose=False, semivariance=False):
+def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_reg = False, max_weights = False, l2_value=0.1, verbose=False, semivariance=False):
     mu = expected_returns.mean_historical_return(returns, returns_data=True, compounding=True, frequency=52)
-    
+
     if semivariance:
         S = risk_models.semicovariance(returns, returns_data=True, frequency=52)
         ef = EfficientSemivariance(mu, returns, verbose=verbose, solver="SCS", frequency=52, solver_options={"max_iters": 99999999})
@@ -72,8 +72,17 @@ def generate_ef(returns:pd.DataFrame, crypto_w:float, sector:bool = False, l2_re
     if l2_reg:
         ef.add_objective(objective_functions.L2_reg, gamma=l2_value) # Reduce 0% weights
 
-    if min_weights:
-        ef.add_constraint(lambda x : x >= 0.001)
+    if max_weights:
+        nr_cryptos = sum(map(lambda x : "-USD" in x, returns.columns.values))
+        nr_cryptos = 1 if nr_cryptos < 3 else 3
+        max_weight = []
+        for asset in returns.columns.values:
+            if sector_mapper[asset] =="etf":
+                max_weight.append(1 - crypto_w)
+            elif sector_mapper[asset] == "crypto":
+                max_weight.append(crypto_w * (1/nr_cryptos))
+
+        ef.add_constraint(lambda x: x <= np.array(max_weight))
 
     return ef
 
@@ -109,7 +118,7 @@ def load_mst_data(date:str, mst_type:str, mst_mode:str, etf=True, crypto=False, 
             return returns_combined
 
     if benchmark:
-        returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")["ACWI"].to_frame()
+        returns_etf = pd.read_pickle(f"{path}etfs-benchmark-{year}.pkl")["IUSQ.DE"].to_frame()
     else:
         returns_etf = pd.read_pickle(f'{path}etf{mode_path}{year}.pkl')
 
@@ -176,7 +185,7 @@ def print_correlation_heatmap(returns:pd.DataFrame, title:str):
     print(title, returns.corr().values[np.triu_indices_from(returns.corr().values,1)].mean())
     fig.show()
 
-def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, min_weights:bool, crypto_w:float):
+def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool, max_weights:bool, crypto_w:float):
     asset_names = returns.columns.values
     crypto = []
     etf = []
@@ -189,9 +198,9 @@ def print_efficient_frontiers_graph(returns:pd.DataFrame, title:str, l2_reg:bool
     returns_crypto = returns[crypto]
     returns_etf = returns[etf]
 
-    ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
-    ef_etf = generate_ef(returns_etf, sector=False, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
-    ef_combined = generate_ef(returns, sector=True, l2_reg=l2_reg, min_weights=min_weights, crypto_w=crypto_w)
+    ef_crypto = generate_ef(returns_crypto, sector=False, l2_reg=l2_reg, max_weights=max_weights, crypto_w=crypto_w)
+    ef_etf = generate_ef(returns_etf, sector=False, l2_reg=l2_reg, max_weights=max_weights, crypto_w=crypto_w)
+    ef_combined = generate_ef(returns, sector=True, l2_reg=l2_reg, max_weights=max_weights, crypto_w=crypto_w)
 
     _, mus_crypto , sigmas_crypto, assets_crypto = plotting.plot_efficient_frontier(ef_crypto, ef_param='return')
     _, mus_etf , sigmas_etf, assets_etf = plotting.plot_efficient_frontier(ef_etf, ef_param='return')
