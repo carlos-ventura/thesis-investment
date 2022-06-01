@@ -2,7 +2,7 @@
 Constants to generate different results with different models
 """
 
-WORLD_ETF_TICKERS = [ "IWDA.AS", "ACWI", 'VWCE.DE']
+WORLD_ETF_TICKERS = [ "IWDA.AS", "IUSQ.DE", 'VWCE.DE']
 BENCHMARK_RISK = 0.2
 
 START_DATE = '2017-11-06'
