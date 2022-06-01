@@ -8,10 +8,10 @@
                         "std": 17.63
                     }
                 },
-                "ACWI": {
+                "IUSQ.DE": {
                     "test": {
-                        "return": 11.01,
-                        "std": 20.31
+                        "return": 13.97,
+                        "std": 17.42
                     }
                 },
                 "VWCE.DE": {
@@ -19,12 +19,6 @@
                         "return": 11.95,
                         "std": 16.62
                     }
-                }
-            },
-            "average": {
-                "test": {
-                    "return": 0.13,
-                    "std": 0.18
                 }
             }
         }
