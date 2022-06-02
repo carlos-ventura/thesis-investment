@@ -245,9 +245,13 @@ def generate_portfolio(returns:pd.DataFrame, weights:dict, money_investment:floa
     return final_port_evolution
 
 def generate_portfolio_stats(portfolio:pd.DataFrame):
+    value = portfolio[0].iloc[-1]
     mu_test = round(float(ep.annual_return(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
     sigma_test = round(float(ep.annual_volatility(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
     down_sigma_test = round(float(ep.downside_risk(portfolio.pct_change()[1:], period="weekly")) * 100, 2)
     mdd_test = round(float(ep.max_drawdown(portfolio.pct_change()[1:])) * 100, 2)
+    sharpe_ratio = (mu_test - 2) / sigma_test
+    sortino_ratio = (mu_test - 2) / down_sigma_test
 
-    return {'efficient risk': {'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test}}
+    return {'efficient risk':{'return': mu_test, 'std': sigma_test, 'down_std': down_sigma_test, 'mdd': mdd_test,
+      "sharpe": sharpe_ratio, "sortino": sortino_ratio, "value": value}}
