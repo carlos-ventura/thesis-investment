@@ -4,6 +4,7 @@ Constants to generate different results with different models
 
 WORLD_ETF_TICKERS = [ "IWDA.AS", "IUSQ.DE", 'VWCE.DE']
 BENCHMARK_RISK = 0.2
+REBALANCE = 52
 
 START_DATE = '2017-11-06'
 #START_DATES = ['2017-11-06'] 
@@ -15,7 +16,7 @@ START_TEST_DATE = '2019-03-11'
 #START_TEST_DATES = ['2019-03-11']
 #START_TEST_DATES = ['2020-03-23']
 
-MST_MODES = ['', 'sr0', 'sr1']
+MST_MODES = ''
 MST_TYPES = ['separate','joint'] 
 
 OPTIMIZER_MEASURES = ['min volatility','efficient risk'] # efficient risk, min volatility
